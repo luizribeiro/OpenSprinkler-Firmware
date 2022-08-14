@@ -895,10 +895,6 @@ void manual_start_program(byte pid, byte uwt) {
 // ==========================================
 // ====== PUSH NOTIFICATION FUNCTIONS =======
 // ==========================================
-void ip2string(char *str, byte ip[4]) {
-  sprintf_P(str + strlen(str), PSTR("%d.%d.%d.%d"), ip[0], ip[1], ip[2], ip[3]);
-}
-
 void push_message(int type, uint32_t lval, float fval, const char *sval) {
   static char topic[TMP_BUFFER_SIZE];
   static char payload[TMP_BUFFER_SIZE];
