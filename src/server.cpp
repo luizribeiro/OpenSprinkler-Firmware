@@ -54,7 +54,6 @@ BufferFiller bfill;
 void schedule_all_stations(ulong curr_time);
 void turn_off_station(byte sid, ulong curr_time);
 void process_dynamic_events(ulong curr_time);
-void check_network(time_t curr_time);
 void check_weather(time_t curr_time);
 void log_statistics(time_t curr_time);
 void delete_log(char *name);

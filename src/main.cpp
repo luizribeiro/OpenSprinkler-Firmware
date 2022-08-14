@@ -128,7 +128,6 @@ void schedule_all_stations(ulong curr_time);
 void turn_on_station(byte sid);
 void turn_off_station(byte sid, ulong curr_time);
 void process_dynamic_events(ulong curr_time);
-void check_network();
 void check_weather();
 bool process_special_program_command(const char *, uint32_t curr_time);
 void delete_log(char *name);
@@ -556,7 +555,6 @@ void do_loop() {
     // check network connection
     if (curr_time && (curr_time % CHECK_NETWORK_INTERVAL == 0))
       os.status.req_network = 1;
-    check_network();
 
     // check weather
     check_weather();
@@ -1099,15 +1097,6 @@ void delete_log(char *name) {
     make_logfile_name(name);
     remove(get_filename_fullpath(tmp_buffer));
   }
-}
-
-/** Perform network check
- * This function pings the router
- * to check if it's still online.
- * If not, it re-initializes Ethernet controller.
- */
-void check_network() {
-  // nothing to do for other platforms
 }
 
 int main(int argc, char *argv[]) {
