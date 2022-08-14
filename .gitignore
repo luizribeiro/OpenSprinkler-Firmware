@@ -9,3 +9,4 @@ build-1284/*
 .pio
 .direnv/
 build/
+.ccls-cache/
