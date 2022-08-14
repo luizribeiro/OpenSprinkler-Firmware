@@ -348,15 +348,6 @@ void OpenSprinkler::reboot_dev(uint8_t cause) {
   reboot(RB_AUTOBOOT);
 }
 
-/** Launch update script */
-void OpenSprinkler::update_dev() {
-  char cmd[1000];
-  sprintf(cmd, "cd %s & ./updater.sh", get_runtime_path());
-  system(cmd);
-}
-
-// extern void flow_isr();
-
 /** Initialize pins, controller variables, LCD */
 void OpenSprinkler::begin() {
 
@@ -487,7 +478,6 @@ void OpenSprinkler::detect_binarysensor_status(ulong curr_time) {
     }
   }
 
-  // ESP8266 is guaranteed to have sensor 2
   if (iopts[IOPT_SENSOR2_TYPE] == SENSOR_TYPE_RAIN ||
       iopts[IOPT_SENSOR2_TYPE] == SENSOR_TYPE_SOIL) {
     if (hw_rev == 2)
@@ -560,18 +550,7 @@ void OpenSprinkler::sensor_resetall() {
   old_status.sensor2_active = status.sensor2_active = 0;
 }
 
-/** Read current sensing value
- * OpenSprinkler 2.3 and above have a 0.2 ohm current sensing resistor.
- * Therefore the conversion from analog reading to milli-amp is:
- * (r/1024)*3.3*1000/0.2 (DC-powered controller)
- * AC-powered controller has a built-in precision rectifier to sense
- * the peak AC current. Therefore the actual current is discounted by 0.707
- * ESP8266's analog reference voltage is 1.0 instead of 3.3, therefore
- * it's further discounted by 1/3.3
- */
-
 /** Read the number of 8-station expansion boards */
-// AVR has capability to detect number of expansion boards
 int OpenSprinkler::detect_exp() { return -1; }
 
 /** Convert hex code to ulong integer */

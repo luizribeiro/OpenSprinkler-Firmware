@@ -862,8 +862,6 @@ void server_home() {
  * en:	enable (0 or 1)
  * rd:	rain delay hours (0 turns off rain delay)
  * re:	remote extension mode
- * ap:	reset to ap (ESP8266 only)
- * update: launch update script (for OSPi/OSBo/Linux only)
  */
 void server_change_values() {
   char *p = get_buffer;
@@ -871,15 +869,9 @@ void server_change_values() {
     reset_all_stations();
   }
 
-  if (findKeyVal(p, tmp_buffer, TMP_BUFFER_SIZE, PSTR("update"), true) &&
-      atoi(tmp_buffer) > 0) {
-    os.update_dev();
-  }
-
   if (findKeyVal(p, tmp_buffer, TMP_BUFFER_SIZE, PSTR("rbt"), true) &&
       atoi(tmp_buffer) > 0) {
     print_html_standard_header();
-    // bfill.emit_p(PSTR("Rebooting..."));
     send_packet(true);
     os.reboot_dev(REBOOT_CAUSE_WEB);
   }

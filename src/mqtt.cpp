@@ -126,12 +126,15 @@ void OSMqtt::begin(void) {
   char *config = tmp_buffer;
   os.sopt_load(SOPT_MQTT_OPTS, config);
   if (*config != 0) {
-    sscanf(config,
-           "\"en\":%d,\"host\":\"%" xstr(MQTT_MAX_HOST_LEN) "[^\"]\",\"port\":%"
-                                                            "d,\"user\":"
-                                                            "\"%" xstr(MQTT_MAX_USERNAME_LEN) "[^\"]\",\"pass\":\"%" xstr(
-                                                                MQTT_MAX_PASSWORD_LEN) "[^\"]\"",
-           &enabled, host, &port, username, password);
+    sscanf(
+        config,
+        "\"en\":%d,\"host\":\"%" xstr(
+            MQTT_MAX_HOST_LEN) "[^\"]\",\"port\":%"
+                               "d,\"user\":"
+                               "\"%" xstr(
+                                   MQTT_MAX_USERNAME_LEN) "[^\"]\",\"pass\":"
+                                                          "\"%" xstr(MQTT_MAX_PASSWORD_LEN) "[^\"]\"",
+        &enabled, host, &port, username, password);
   }
 
   begin(host, port, username, password, (bool)enabled);
@@ -214,12 +217,6 @@ void OSMqtt::loop(void) {
   }
 #endif
 }
-
-/**************************** ARDUINO
- * ********************************************/
-
-/************************** RASPBERRY PI / BBB / DEMO
- * ****************************************/
 
 static bool _connected = false;
 

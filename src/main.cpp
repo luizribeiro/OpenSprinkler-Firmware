@@ -558,11 +558,8 @@ void do_loop() {
     }
 
     // perform ntp sync
-    // instead of using curr_time, which may change due to NTP sync itself
-    // we use Arduino's millis() method
     if (curr_time % NTP_SYNC_INTERVAL == 0)
       os.status.req_ntpsync = 1;
-    // if((millis()/1000) % NTP_SYNC_INTERVAL==15) os.status.req_ntpsync = 1;
     perform_ntp_sync();
 
     // check network connection

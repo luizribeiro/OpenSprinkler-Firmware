@@ -176,7 +176,6 @@ public:
   static byte weather_update_flag;
   // member functions
   // -- setup
-  static void update_dev();        // update software for Linux instances
   static void reboot_dev(uint8_t); // reboot the microcontroller
   static void begin(); // initialization, must call this function before calling
                        // other functions
