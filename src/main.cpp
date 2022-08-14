@@ -75,7 +75,7 @@ float flow_last_gpm = 0;
 uint32_t reboot_timer = 0;
 
 void flow_poll() {
-  byte curr_flow_state = digitalReadExt(PIN_SENSOR1);
+  byte curr_flow_state = digitalRead(PIN_SENSOR1);
   if (!(prev_flow_state == HIGH &&
         curr_flow_state == LOW)) { // only record on falling edge
     prev_flow_state = curr_flow_state;

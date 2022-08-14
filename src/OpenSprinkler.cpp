@@ -355,8 +355,8 @@ void OpenSprinkler::begin() {
   nstations = nboards * 8;
 
   // set rf data pin
-  pinModeExt(PIN_RFTX, OUTPUT);
-  digitalWriteExt(PIN_RFTX, LOW);
+  pinMode(PIN_RFTX, OUTPUT);
+  digitalWrite(PIN_RFTX, LOW);
 
   DEBUG_PRINTLN(get_runtime_path());
 }
@@ -409,8 +409,8 @@ void OpenSprinkler::detect_binarysensor_status(ulong curr_time) {
   if (iopts[IOPT_SENSOR1_TYPE] == SENSOR_TYPE_RAIN ||
       iopts[IOPT_SENSOR1_TYPE] == SENSOR_TYPE_SOIL) {
     if (hw_rev == 2)
-      pinModeExt(PIN_SENSOR1, INPUT_PULLUP); // this seems necessary for OS 3.2
-    byte val = digitalReadExt(PIN_SENSOR1);
+      pinMode(PIN_SENSOR1, INPUT_PULLUP); // this seems necessary for OS 3.2
+    byte val = digitalRead(PIN_SENSOR1);
     status.sensor1 = (val == iopts[IOPT_SENSOR1_OPTION]) ? 0 : 1;
     if (status.sensor1) {
       if (!sensor1_on_timer) {
@@ -439,8 +439,8 @@ void OpenSprinkler::detect_binarysensor_status(ulong curr_time) {
   if (iopts[IOPT_SENSOR2_TYPE] == SENSOR_TYPE_RAIN ||
       iopts[IOPT_SENSOR2_TYPE] == SENSOR_TYPE_SOIL) {
     if (hw_rev == 2)
-      pinModeExt(PIN_SENSOR2, INPUT_PULLUP); // this seems necessary for OS 3.2
-    byte val = digitalReadExt(PIN_SENSOR2);
+      pinMode(PIN_SENSOR2, INPUT_PULLUP); // this seems necessary for OS 3.2
+    byte val = digitalRead(PIN_SENSOR2);
     status.sensor2 = (val == iopts[IOPT_SENSOR2_OPTION]) ? 0 : 1;
     if (status.sensor2) {
       if (!sensor2_on_timer) {
@@ -473,8 +473,8 @@ byte OpenSprinkler::detect_programswitch_status(ulong curr_time) {
   if (iopts[IOPT_SENSOR1_TYPE] == SENSOR_TYPE_PSWITCH) {
     static byte sensor1_hist = 0;
     if (hw_rev == 2)
-      pinModeExt(PIN_SENSOR1, INPUT_PULLUP); // this seems necessary for OS 3.2
-    status.sensor1 = (digitalReadExt(PIN_SENSOR1) !=
+      pinMode(PIN_SENSOR1, INPUT_PULLUP); // this seems necessary for OS 3.2
+    status.sensor1 = (digitalRead(PIN_SENSOR1) !=
                       iopts[IOPT_SENSOR1_OPTION]); // is switch activated?
     sensor1_hist = (sensor1_hist << 1) | status.sensor1;
     // basic noise filtering: only trigger if sensor matches pattern:
@@ -486,8 +486,8 @@ byte OpenSprinkler::detect_programswitch_status(ulong curr_time) {
   if (iopts[IOPT_SENSOR2_TYPE] == SENSOR_TYPE_PSWITCH) {
     static byte sensor2_hist = 0;
     if (hw_rev == 2)
-      pinModeExt(PIN_SENSOR2, INPUT_PULLUP); // this seems necessary for OS 3.2
-    status.sensor2 = (digitalReadExt(PIN_SENSOR2) !=
+      pinMode(PIN_SENSOR2, INPUT_PULLUP); // this seems necessary for OS 3.2
+    status.sensor2 = (digitalRead(PIN_SENSOR2) !=
                       iopts[IOPT_SENSOR2_OPTION]); // is sensor activated?
     sensor2_hist = (sensor2_hist << 1) | status.sensor2;
     if ((sensor2_hist & 0b1111) == 0b0011) {

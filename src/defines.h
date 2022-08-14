@@ -285,9 +285,6 @@ typedef unsigned char uint8_t;
 typedef short int16_t;
 typedef unsigned short uint16_t;
 typedef bool boolean;
-#define pinModeExt pinMode
-#define digitalReadExt digitalRead
-#define digitalWriteExt digitalWrite
 
 /** Other defines */
 // button values
