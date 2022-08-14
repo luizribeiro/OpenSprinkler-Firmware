@@ -143,8 +143,6 @@ int gpio_fd_open(int pin, int mode = O_WRONLY);
 void gpio_fd_close(int fd);
 void gpio_write(int fd, byte value);
 byte digitalRead(int pin);
-// mode can be any of 'rising', 'falling', 'both'
-void attachInterrupt(int pin, const char* mode, void (*isr)(void));
 
 #endif
 

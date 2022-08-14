@@ -22,6 +22,7 @@
  */
  
 #include "gpio.h"
+#include <gpiod.h>
 
 #if defined(ARDUINO)
 
@@ -210,6 +211,7 @@ static void (*isrFunctions [GPIO_MAX])(void);
 
 static volatile int		 pinPass = -1 ;
 static pthread_mutex_t pinMutex ;
+static struct gpiod_chip *chip = NULL;
 
 /** Export gpio pin */
 static byte GPIOExport(int pin) {
@@ -228,130 +230,55 @@ static byte GPIOExport(int pin) {
 	return 1;
 }
 
-/** Unexport gpio pin */
-static byte GPIOUnexport(int pin) {
-	char buffer[BUFFER_MAX];
-	int fd, len;
-
-	fd = open("/sys/class/gpio/unexport", O_WRONLY);
-	if (fd < 0) {
-		DEBUG_PRINTLN("failed to open unexport for writing");
-		return 0;
-	}
-
-	len = snprintf(buffer, sizeof(buffer), "%d", pin);
-	write(fd, buffer, len);
-	close(fd);
-	return 1;
-}
-
-/** Set interrupt edge mode */
-static byte GPIOSetEdge(int pin, const char *edge) {
-	char path[BUFFER_MAX];
-	int fd, len;
-
-	snprintf(path, BUFFER_MAX, "/sys/class/gpio/gpio%d/edge", pin);
-
-	fd = open(path, O_WRONLY);
-	if (fd < 0) {
-		DEBUG_PRINTLN("failed to open gpio edge for writing");
-		return 0;
-	}
-	write(fd, edge, strlen(edge)+1);
-	close(fd);
-	return 1;
+struct gpiod_chip *get_chip() {
+  if (chip == NULL) {
+    chip = gpiod_chip_open_by_name("gpiochip0");
+  }
+  return chip;
 }
 
 /** Set pin mode, in or out */
 void pinMode(int pin, byte mode) {
-	static const char dir_str[]  = "in\0out";
-
-	char path[BUFFER_MAX];
-	int fd;
-
-	snprintf(path, BUFFER_MAX, "/sys/class/gpio/gpio%d/direction", pin);
-
-	struct stat st;
-	if(stat(path, &st)) {
-		if (!GPIOExport(pin)) return;
-	}
-
-	fd = open(path, O_WRONLY);
-	if (fd < 0) {
-		DEBUG_PRINTLN("failed to open gpio direction for writing");
-		return;
-	}
-
-	if (-1 == write(fd, &dir_str[(INPUT==mode)||(INPUT_PULLUP==mode)?0:3], (INPUT==mode)||(INPUT_PULLUP==mode)?2:3)) {
-		DEBUG_PRINTLN("failed to set direction");
-		return;
-	}
-
-	close(fd);
-#if defined(OSPI)
-	if(mode==INPUT_PULLUP) {
-		char cmd[BUFFER_MAX];
-		snprintf(cmd, BUFFER_MAX, "gpio -g mode %d up", pin);
-		system(cmd);
-	}
-#endif
-	return;
+  struct gpiod_chip *chip = get_chip();
+  struct gpiod_line *line = gpiod_chip_get_line(chip, pin);
+  if (mode == INPUT || mode == INPUT_PULLUP) {
+    gpiod_line_request_input_flags(
+        line,
+        "opensprinkler",
+        mode == INPUT
+          ? GPIOD_CTXLESS_FLAG_BIAS_PULL_UP
+          : GPIOD_CTXLESS_FLAG_BIAS_DISABLE
+    );
+  } else {
+    gpiod_line_request_output(line, "opensprinkler", 0);
+  }
 }
 
 /** Open file for digital pin */
 int gpio_fd_open(int pin, int mode) {
-	char path[BUFFER_MAX];
-	int fd;
-
-	snprintf(path, BUFFER_MAX, "/sys/class/gpio/gpio%d/value", pin);
-	fd = open(path, mode);
-	if (fd < 0) {
-		DEBUG_PRINTLN("failed to open gpio");
-		return -1;
-	}
-	return fd;
+  return 0;
 }
 
 /** Close file */
 void gpio_fd_close(int fd) {
-	close(fd);
 }
 
 /** Read digital value */
 byte digitalRead(int pin) {
-	char value_str[3];
-
-	int fd = gpio_fd_open(pin, O_RDONLY);
-	if (fd < 0) {
-		return 0;
-	}
-
-	if (read(fd, value_str, 3) < 0) {
-		DEBUG_PRINTLN("failed to read value");
-		return 0;
-	}
-
-	close(fd);
-	return atoi(value_str);
+  struct gpiod_chip *chip = get_chip();
+  struct gpiod_line *line = gpiod_chip_get_line(chip, pin);
+  return gpiod_line_get_value(line);
 }
 
 /** Write digital value given file descriptor */
 void gpio_write(int fd, byte value) {
-	static const char value_str[] = "01";
-
-	if (1 != write(fd, &value_str[LOW==value?0:1], 1)) {
-		DEBUG_PRINT("failed to write value on pin ");
-	}
 }
 
 /** Write digital value */
 void digitalWrite(int pin, byte value) {
-	int fd = gpio_fd_open(pin);
-	if (fd < 0) {
-		return;
-	}
-	gpio_write(fd, value);
-	close(fd);
+  struct gpiod_chip *chip = get_chip();
+  struct gpiod_line *line = gpiod_chip_get_line(chip, pin);
+  gpiod_line_set_value(line, value);
 }
 
 static int HiPri (const int pri) {
@@ -406,53 +333,11 @@ static void *interruptHandler (void *arg) {
 }
 
 #include "utils.h"
-/** Attach an interrupt function to pin */
-void attachInterrupt(int pin, const char* mode, void (*isr)(void)) {
-	if((pin<0)||(pin>GPIO_MAX)) {
-		DEBUG_PRINTLN("pin out of range");
-		return;
-	}
-
-	// set pin to INPUT mode and set interrupt edge mode
-	pinMode(pin, INPUT);
-	GPIOSetEdge(pin, mode);
-
-	char path[BUFFER_MAX];
-	snprintf(path, BUFFER_MAX, "/sys/class/gpio/gpio%d/value", pin);
-	int fd;
-
-	// open gpio file
-	if(sysFds[pin]==-1) {
-		if((sysFds[pin]=open(path, O_RDWR))<0) {
-			DEBUG_PRINTLN("failed to open gpio value for reading");
-			return;
-		}
-	}
-
-	int count, i;
-	char c;
-	// clear any pending interrupts
-	ioctl (sysFds[pin], FIONREAD, &count) ;
-	for (i=0; i<count; i++)
-		read (sysFds[pin], &c, 1) ;
-
-	// record isr function
-	isrFunctions[pin] = isr;
-
-	pthread_t threadId ;
-	pthread_mutex_lock (&pinMutex) ;
-		pinPass = pin ;
-		pthread_create (&threadId, NULL, interruptHandler, NULL) ;
-		while (pinPass != -1)
-			delay(1) ;
-	pthread_mutex_unlock (&pinMutex) ;
-}
 #else
 
 void pinMode(int pin, byte mode) {}
 void digitalWrite(int pin, byte value) {}
 byte digitalRead(int pin) {return 0;}
-void attachInterrupt(int pin, const char* mode, void (*isr)(void)) {}
 int gpio_fd_open(int pin, int mode) {return 0;}
 void gpio_fd_close(int fd) {}
 void gpio_write(int fd, byte value) {}
