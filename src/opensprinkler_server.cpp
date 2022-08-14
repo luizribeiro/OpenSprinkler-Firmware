@@ -656,10 +656,6 @@ void server_json_options_main() {
     if (oid == IOPT_BOOST_TIME)
       continue;
 
-    if (oid == IOPT_SEQUENTIAL_RETIRED || oid == IOPT_URS_RETIRED ||
-        oid == IOPT_RSO_RETIRED)
-      continue;
-
     // each json name takes 5 characters
     strncpy_P0(tmp_buffer, iopt_json_names + oid * 5, 5);
     bfill.emit_p(PSTR("\"$S\":$D"), tmp_buffer, v);
@@ -959,10 +955,9 @@ void server_change_options() {
 
     // skip options that cannot be set through /co command
     if (oid == IOPT_FW_VERSION || oid == IOPT_HW_VERSION ||
-        oid == IOPT_SEQUENTIAL_RETIRED || oid == IOPT_DEVICE_ENABLE ||
-        oid == IOPT_FW_MINOR || oid == IOPT_REMOTE_EXT_MODE ||
-        oid == IOPT_RESET || oid == IOPT_WIFI_MODE || oid == IOPT_URS_RETIRED ||
-        oid == IOPT_RSO_RETIRED)
+        oid == IOPT_DEVICE_ENABLE || oid == IOPT_FW_MINOR ||
+        oid == IOPT_REMOTE_EXT_MODE || oid == IOPT_RESET ||
+        oid == IOPT_WIFI_MODE)
       continue;
     prev_value = os.iopts[oid];
     max_value = pgm_read_byte(iopt_max + oid);
@@ -1023,25 +1018,6 @@ void server_change_options() {
     os.sopt_save(SOPT_MQTT_OPTS, tmp_buffer);
     os.status.req_mqtt_restart = true;
   }
-
-  /*
-  // wtkey is retired
-  if (findKeyVal(p, tmp_buffer, TMP_BUFFER_SIZE, PSTR("wtkey"), true,
-  &keyfound)) { urlDecode(tmp_buffer); if (os.sopt_save(SOPT_WEATHER_KEY,
-  tmp_buffer)) {  // if weather key has changed weather_change = true;
-          }
-  } else if (keyfound) {
-          tmp_buffer[0]=0;
-          os.sopt_save(SOPT_WEATHER_KEY, tmp_buffer);
-  }
-
-  keyfound = 0;
-  if (findKeyVal(p, tmp_buffer, TMP_BUFFER_SIZE, PSTR("blynk"), true,
-  &keyfound)) { urlDecode(tmp_buffer); os.sopt_save(SOPT_BLYNK_TOKEN,
-  tmp_buffer); } else if (keyfound) { tmp_buffer[0]=0;
-          os.sopt_save(SOPT_BLYNK_TOKEN, tmp_buffer);
-  }
-  */
 
   if (err)
     handle_return(HTML_DATA_OUTOFBOUND);

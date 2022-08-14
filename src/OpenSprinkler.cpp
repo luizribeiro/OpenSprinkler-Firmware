@@ -196,13 +196,10 @@ byte OpenSprinkler::iopts[] = {
     // hardware version
     OS_HW_VERSION,
     0,           // number of 8-station extension board. 0: no extension boards
-    1,           // the option 'sequential' is now retired
     120,         // station delay time (-10 minutes to 10 minutes).
     0,           // index of master station. 0: no master station
     120,         // master on time adjusted time (-10 minutes to 10 minutes)
     120,         // master off adjusted time (-10 minutes to 10 minutes)
-    0,           // urs (retired)
-    0,           // rso (retired)
     100,         // water level (default 100%),
     1,           // device enable
     0,           // 1: ignore password; 0: use password
