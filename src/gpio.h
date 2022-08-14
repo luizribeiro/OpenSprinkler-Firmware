@@ -39,9 +39,6 @@
 
 void pinMode(int pin, byte mode);
 void digitalWrite(int pin, byte value);
-int gpio_fd_open(int pin, int mode = O_WRONLY);
-void gpio_fd_close(int fd);
-void gpio_write(int fd, byte value);
 byte digitalRead(int pin);
 
 #endif // GPIO_H

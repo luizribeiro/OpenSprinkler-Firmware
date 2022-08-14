@@ -734,13 +734,11 @@ void OpenSprinkler::clear_all_station_bits() {
   }
 }
 
-int rf_gpio_fd = -1;
-
 /** Transmit one RF signal bit */
 void transmit_rfbit(ulong lenH, ulong lenL) {
-  gpio_write(rf_gpio_fd, 1);
+  digitalWrite(PIN_RFTX, 1);
   delayMicrosecondsHard(lenH);
-  gpio_write(rf_gpio_fd, 0);
+  digitalWrite(PIN_RFTX, 0);
   delayMicrosecondsHard(lenL);
 }
 
@@ -773,10 +771,7 @@ void OpenSprinkler::switch_rfstation(RFStationData *data, bool turnon) {
   ulong on, off;
   uint16_t length = parse_rfstation_code(data, &on, &off);
   // pre-open gpio file to minimize overhead
-  rf_gpio_fd = gpio_fd_open(PIN_RFTX);
   send_rfsignal(turnon ? on : off, length);
-  gpio_fd_close(rf_gpio_fd);
-  rf_gpio_fd = -1;
 }
 
 /** Switch GPIO station

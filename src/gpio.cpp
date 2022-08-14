@@ -58,17 +58,11 @@ void pinMode(int pin, byte mode) {
   }
 }
 
-int gpio_fd_open(int pin, int mode) { return 0; }
-
-void gpio_fd_close(int fd) {}
-
 byte digitalRead(int pin) {
   struct gpiod_chip *chip = get_chip();
   struct gpiod_line *line = gpiod_chip_get_line(chip, pin);
   return gpiod_line_get_value(line);
 }
-
-void gpio_write(int fd, byte value) {}
 
 void digitalWrite(int pin, byte value) {
   struct gpiod_chip *chip = get_chip();
