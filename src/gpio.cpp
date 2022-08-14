@@ -34,22 +34,8 @@
 #include <poll.h>
 #include <pthread.h>
 
-#define BUFFER_MAX 64
 #define GPIO_MAX 64
 
-// GPIO file descriptors
-static int sysFds[GPIO_MAX] = {
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-};
-
-// Interrupt service routine functions
-static void (*isrFunctions[GPIO_MAX])(void);
-
-static volatile int pinPass = -1;
-static pthread_mutex_t pinMutex;
 static struct gpiod_chip *chip = NULL;
 
 struct gpiod_chip *get_chip() {
@@ -59,7 +45,6 @@ struct gpiod_chip *get_chip() {
   return chip;
 }
 
-/** Set pin mode, in or out */
 void pinMode(int pin, byte mode) {
   struct gpiod_chip *chip = get_chip();
   struct gpiod_line *line = gpiod_chip_get_line(chip, pin);
@@ -73,23 +58,18 @@ void pinMode(int pin, byte mode) {
   }
 }
 
-/** Open file for digital pin */
 int gpio_fd_open(int pin, int mode) { return 0; }
 
-/** Close file */
 void gpio_fd_close(int fd) {}
 
-/** Read digital value */
 byte digitalRead(int pin) {
   struct gpiod_chip *chip = get_chip();
   struct gpiod_line *line = gpiod_chip_get_line(chip, pin);
   return gpiod_line_get_value(line);
 }
 
-/** Write digital value given file descriptor */
 void gpio_write(int fd, byte value) {}
 
-/** Write digital value */
 void digitalWrite(int pin, byte value) {
   struct gpiod_chip *chip = get_chip();
   struct gpiod_line *line = gpiod_chip_get_line(chip, pin);

@@ -29,10 +29,6 @@
 #include <inttypes.h>
 #include <ctype.h>
 
-#ifdef __APPLE__
-#define MSG_NOSIGNAL SO_NOSIGPIPE
-#endif
-
 class EthernetServer;
 
 class EthernetClient {

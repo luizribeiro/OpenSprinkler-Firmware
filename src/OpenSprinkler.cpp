@@ -71,7 +71,6 @@ extern char tmp_buffer[];
 extern char ether_buffer[];
 
 byte OpenSprinkler::pin_sr_data = PIN_SR_DATA;
-// todo future: LCD define for Linux-based systems
 
 /** Option json names (stored in PROGMEM to reduce RAM usage) */
 // IMPORTANT: each json name is strictly 5 characters
@@ -142,92 +141,6 @@ const char iopt_json_names[] PROGMEM = "fwv\0\0"
                                        "subn4"
                                        "wimod"
                                        "reset";
-
-// for String options
-/*
-const char sopt_json_names[] PROGMEM =
-        "dkey\0"
-        "loc\0\0"
-        "jsp\0\0"
-        "wsp\0\0"
-        "wtkey"
-        "wto\0\0"
-        "ifkey"
-        "ssid\0"
-        "pass\0"
-        "mqtt\0"
-        "apass";
-*/
-
-/** Option promopts (stored in PROGMEM to reduce RAM usage) */
-// Each string is strictly 16 characters
-// with SPACE fillings if less
-const char iopt_prompts[] PROGMEM = "Firmware version"
-                                    "Time zone (GMT):"
-                                    "Enable NTP sync?"
-                                    "Enable DHCP?    "
-                                    "Static.ip1:     "
-                                    "Static.ip2:     "
-                                    "Static.ip3:     "
-                                    "Static.ip4:     "
-                                    "Gateway.ip1:    "
-                                    "Gateway.ip2:    "
-                                    "Gateway.ip3:    "
-                                    "Gateway.ip4:    "
-                                    "HTTP Port:      "
-                                    "----------------"
-                                    "Hardware version"
-                                    "# of exp. board:"
-                                    "----------------"
-                                    "Stn. delay (sec)"
-                                    "Master 1 (Mas1):"
-                                    "Mas1  on adjust:"
-                                    "Mas1 off adjust:"
-                                    "----------------"
-                                    "----------------"
-                                    "Watering level: "
-                                    "Device enabled? "
-                                    "Ignore password?"
-                                    "Device ID:      "
-                                    "LCD contrast:   "
-                                    "LCD brightness: "
-                                    "LCD dimming:    "
-                                    "DC boost time:  "
-                                    "Weather algo.:  "
-                                    "NTP server.ip1: "
-                                    "NTP server.ip2: "
-                                    "NTP server.ip3: "
-                                    "NTP server.ip4: "
-                                    "Enable logging? "
-                                    "Master 2 (Mas2):"
-                                    "Mas2  on adjust:"
-                                    "Mas2 off adjust:"
-                                    "Firmware minor: "
-                                    "Pulse rate:     "
-                                    "----------------"
-                                    "As remote ext.? "
-                                    "DNS server.ip1: "
-                                    "DNS server.ip2: "
-                                    "DNS server.ip3: "
-                                    "DNS server.ip4: "
-                                    "Special Refresh?"
-                                    "IFTTT Enable:   "
-                                    "Sensor 1 type:  "
-                                    "Normally open?  "
-                                    "Sensor 2 type:  "
-                                    "Normally open?  "
-                                    "Sn1 on adjust:  "
-                                    "Sn1 off adjust: "
-                                    "Sn2 on adjust:  "
-                                    "Sn2 off adjust: "
-                                    "Subnet mask1:   "
-                                    "Subnet mask2:   "
-                                    "Subnet mask3:   "
-                                    "Subnet mask4:   "
-                                    "WiFi mode?      "
-                                    "Factory reset?  ";
-
-// string options do not have prompts
 
 /** Option maximum values (stored in PROGMEM to reduce RAM usage) */
 const byte iopt_max[] PROGMEM = {0,
@@ -304,16 +217,11 @@ byte OpenSprinkler::iopts[] = {
     1,             // 0: disable NTP sync, 1: enable NTP sync
     1,             // 0: use static ip, 1: use dhcp
     0,             // this and next 3 bytes define static ip
-    0,
-    0,
-    0,
+    0, 0, 0,
     0, // this and next 3 bytes define static gateway ip
-    0,
-    0,
-    0,
+    0, 0, 0,
     144, // this and next byte define http port number
-    31,
-    OS_HW_VERSION,
+    31, OS_HW_VERSION,
     0,   // number of 8-station extension board. 0: no extension boards
     1,   // the option 'sequential' is now retired
     120, // station delay time (-10 minutes to 10 minutes).
@@ -332,9 +240,7 @@ byte OpenSprinkler::iopts[] = {
     80,  // boost time (only valid to DC and LATCH type)
     0,   // weather algorithm (0 means not using weather algorithm)
     0,   // this and the next three bytes define the ntp server ip
-    0,
-    0,
-    0,
+    0, 0, 0,
     1,           // enable logging: 0: disable; 1: enable.
     0,           // index of master2. 0: no master2 station
     120,         // master2 on adjusted time
@@ -344,9 +250,7 @@ byte OpenSprinkler::iopts[] = {
     0,           // default is 1.00 (100)
     0,           // set as remote extension
     8, // this and the next three bytes define the custom dns server ip
-    8,
-    8,
-    8,
+    8, 8, 8,
     0,   // special station auto refresh
     0,   // ifttt enable bits
     0,   // sensor 1 type (see SENSOR_TYPE macro defines)
@@ -373,15 +277,6 @@ const char *OpenSprinkler::sopts[] = {
     DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING,
     DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING,
     DEFAULT_EMPTY_STRING};
-
-/** Weekday strings (stored in PROGMEM to reduce RAM usage) */
-static const char days_str[] PROGMEM = "Mon\0"
-                                       "Tue\0"
-                                       "Wed\0"
-                                       "Thu\0"
-                                       "Fri\0"
-                                       "Sat\0"
-                                       "Sun\0";
 
 /** Calculate local time (UTC time plus time zone offset) */
 time_t OpenSprinkler::now_tz() {
@@ -749,13 +644,6 @@ byte OpenSprinkler::get_station_type(byte sid) {
   return file_read_byte(STATIONS_FILENAME, (uint32_t)sid * sizeof(StationData) +
                                                offsetof(StationData, type));
 }
-
-/** Get station attribute */
-/*void OpenSprinkler::get_station_attrib(byte sid, StationAttrib *attrib); {
-        file_read_block(STATIONS_FILENAME, attrib,
-(uint32_t)sid*sizeof(StationData)+offsetof(StationData, attrib),
-sizeof(StationAttrib));
-}*/
 
 /** Save all station attribs to file (backward compatibility) */
 void OpenSprinkler::attribs_save() {
