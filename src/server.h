@@ -21,8 +21,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _OPENSPRINKLER_SERVER_H
-#define _OPENSPRINKLER_SERVER_H
+#ifndef _SERVER_H
+#define _SERVER_H
 
 #include <stdarg.h>
 
@@ -91,4 +91,4 @@ public:
   unsigned int position() const { return ptr - start; }
 };
 
-#endif // _OPENSPRINKLER_SERVER_H
+#endif // _SERVER_H

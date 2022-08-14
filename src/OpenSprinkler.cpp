@@ -22,7 +22,7 @@
  */
 
 #include "OpenSprinkler.h"
-#include "opensprinkler_server.h"
+#include "server.h"
 #include "gpio.h"
 #include "testmode.h"
 
@@ -247,7 +247,7 @@ time_t OpenSprinkler::now_tz() {
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include "utils.h"
-#include "opensprinkler_server.h"
+#include "server.h"
 
 /** Initialize network with the given mac address and http port */
 byte OpenSprinkler::start_network() {

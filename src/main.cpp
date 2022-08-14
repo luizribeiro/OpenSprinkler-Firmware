@@ -26,7 +26,7 @@
 #include "OpenSprinkler.h"
 #include "program.h"
 #include "weather.h"
-#include "opensprinkler_server.h"
+#include "server.h"
 #include "mqtt.h"
 
 EthernetServer *m_server = 0;
