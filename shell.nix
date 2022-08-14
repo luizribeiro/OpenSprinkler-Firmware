@@ -5,6 +5,7 @@ pkgs.mkShell {
     # dev tools
     ccls
     clang-tools
+    gdb
 
     # dependencies
     cmake
