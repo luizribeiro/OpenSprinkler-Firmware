@@ -183,21 +183,6 @@ char dec2hexchar(byte dec) {
     return 'A' + (dec - 10);
 }
 
-/** Check and verify password */
-boolean check_password(char *p) {
-  if (os.iopts[IOPT_IGNORE_PASSWORD])
-    return true;
-  if (m_client && !p) {
-    p = get_buffer;
-  }
-  if (findKeyVal(p, tmp_buffer, TMP_BUFFER_SIZE, PSTR("pw"), true)) {
-    urlDecode(tmp_buffer);
-    if (os.password_verify(tmp_buffer))
-      return true;
-  }
-  return false;
-}
-
 void server_json_stations_attrib(const char *name, byte *attrib) {
   bfill.emit_p(PSTR("\"$F\":["), name);
   for (byte i = 0; i < os.nboards; i++) {
@@ -279,9 +264,8 @@ void server_change_stations_attrib(char *p, char header, byte *attrib) {
 }
 
 /**Change Station Name and Attributes
- * Command: /cs?pw=xxx&s?=x&m?=x&i?=x&n?=x&d?=x
+ * Command: /cs?s?=x&m?=x&i?=x&n?=x&d?=x
  *
- * pw: password
  * s?: station name (? is station index, starting from 0)
  * m?: master operation bit field (? is board index, starting from 0)
  * i?: ignore rain bit field
@@ -380,9 +364,8 @@ uint16_t parse_listdata(char **p) {
 
 void manual_start_program(byte, byte);
 /** Manual start program
- * Command: /mp?pw=xxx&pid=xxx&uwt=xxx
+ * Command: /mp?pid=xxx&uwt=xxx
  *
- * pw:	password
  * pid: program index (0 refers to the first program)
  * uwt: use weather (i.e. watering percentage)
  */
@@ -413,9 +396,8 @@ void server_manual_program() {
 
 /**
  * Change run-once program
- * Command: /cr?pw=xxx&t=[x,x,x...]
+ * Command: /cr?t=[x,x,x...]
  *
- * pw: password
  * t:  station water time
  */
 void server_change_runonce() {
@@ -470,9 +452,8 @@ void server_change_runonce() {
 
 /**
  * Delete a program
- * Command: /dp?pw=xxx&pid=xxx
+ * Command: /dp?pid=xxx
  *
- * pw: password
  * pid:program index (-1 will delete all programs)
  */
 void server_delete_program() {
@@ -494,9 +475,8 @@ void server_delete_program() {
 
 /**
  * Move up a program
- * Command: /up?pw=xxx&pid=xxx
+ * Command: /up?pid=xxx
  *
- * pw:	password
  * pid: program index (must be 1 or larger, because we can't move up program 0)
  */
 void server_moveup_program() {
@@ -517,9 +497,8 @@ void server_moveup_program() {
 /**
  * Change a program
  * Command:
- * /cp?pw=xxx&pid=x&v=[flag,days0,days1,[start0,start1,start2,start3],[dur0,dur1,dur2..]]&name=x
+ * /cp?pid=x&v=[flag,days0,days1,[start0,start1,start2,start3],[dur0,dur1,dur2..]]&name=x
  *
- * pw:		password
  * pid:		program index
  * flag:	program flag
  * start?:up to 4 start times
@@ -805,8 +784,7 @@ void server_home() {
       PSTR("<!DOCTYPE html>\n<html>\n<head>\n$F</head>\n<body>\n<script>"),
       htmlMobileHeader);
   // send server variables and javascript packets
-  bfill.emit_p(PSTR("var ver=$D,ipas=$D;</script>\n"), OS_FW_VERSION,
-               os.iopts[IOPT_IGNORE_PASSWORD]);
+  bfill.emit_p(PSTR("var ver=$D,ipas=1;</script>\n"), OS_FW_VERSION);
 
   bfill.emit_p(PSTR("<script src=\"$O/home.js\"></script>\n</body>\n</html>"),
                SOPT_JAVASCRIPTURL);
@@ -816,9 +794,8 @@ void server_home() {
 
 /**
  * Change controller variables
- * Command: /cv?pw=xxx&rsn=x&rbt=x&en=x&rd=x&re=x&ap=x
+ * Command: /cv?rsn=x&rbt=x&en=x&rd=x&re=x&ap=x
  *
- * pw:	password
  * rsn: reset all stations (0 or 1)
  * rbt: reboot controller (0 or 1)
  * en:	enable (0 or 1)
@@ -884,9 +861,8 @@ void string_remove_space(char *src) {
 
 /**
  * Change script url
- * Command: /cu?pw=xxx&jsp=x
+ * Command: /cu?jsp=x
  *
- * pw:	password
  * jsp: Javascript path
  */
 void server_change_scripturl() {
@@ -911,9 +887,8 @@ void server_change_scripturl() {
 
 /**
  * Change options
- * Command: /co?pw=xxx&o?=x&loc=x&ttt=x
+ * Command: /co?o?=x&loc=x&ttt=x
  *
- * pw:	password
  * o?:	option name (? is option index)
  * loc: location
  * ttt: manual time
@@ -1018,31 +993,6 @@ void server_change_options() {
   handle_return(HTML_SUCCESS);
 }
 
-/**
- * Change password
- * Command: /sp?pw=xxx&npw=x&cpw=x
- *
- * pw:	password
- * npw: new password
- * cpw: confirm new password
- */
-void server_change_password() {
-
-  char *p = get_buffer;
-  if (findKeyVal(p, tmp_buffer, TMP_BUFFER_SIZE, PSTR("npw"), true)) {
-    char tbuf2[TMP_BUFFER_SIZE];
-    if (findKeyVal(p, tbuf2, TMP_BUFFER_SIZE, PSTR("cpw"), true) &&
-        strncmp(tmp_buffer, tbuf2, TMP_BUFFER_SIZE) == 0) {
-      urlDecode(tmp_buffer);
-      os.sopt_save(SOPT_PASSWORD, tmp_buffer);
-      handle_return(HTML_SUCCESS);
-    } else {
-      handle_return(HTML_MISMATCH);
-    }
-  }
-  handle_return(HTML_DATA_MISSING);
-}
-
 void server_json_status_main() {
   bfill.emit_p(PSTR("\"sn\":["));
   byte sid;
@@ -1064,9 +1014,8 @@ void server_json_status() {
 
 /**
  * Test station (previously manual operation)
- * Command: /cm?pw=xxx&sid=x&en=x&t=x
+ * Command: /cm?sid=x&en=x&t=x
  *
- * pw: password
  * sid:station index (starting from 0)
  * en: enable (0 or 1)
  * t:  timer (required if en=1)
@@ -1244,10 +1193,9 @@ void server_json_log() {
 }
 /**
  * Delete log
- * Command: /dl?pw=xxx&day=xxx
- *					/dl?pw=xxx&day=all
+ * Command: /dl?day=xxx
+ *					/dl?day=all
  *
- * pw: password
  * day:day (epoch time / 86400)
  * if day=all: delete all log files)
  */
@@ -1301,7 +1249,6 @@ const char _url_keys[] PROGMEM = "cv"
                                  "jp"
                                  "co"
                                  "jo"
-                                 "sp"
                                  "js"
                                  "cm"
                                  "cs"
@@ -1325,7 +1272,6 @@ URLHandler urls[] = {
     server_json_programs,        // jp
     server_change_options,       // co
     server_json_options,         // jo
-    server_change_password,      // sp
     server_json_status,          // js
     server_change_manual,        // cm
     server_change_stations,      // cs
@@ -1358,39 +1304,25 @@ void handle_web_request(char *p) {
       if (pgm_read_byte(_url_keys + 2 * i) == com[0] &&
           pgm_read_byte(_url_keys + 2 * i + 1) == com[1]) {
 
-        // check password
         int ret = HTML_UNAUTHORIZED;
 
-        if (com[0] == 's' && com[1] == 'u') { // for /su do not require password
+        if (com[0] == 's' && com[1] == 'u') {
           get_buffer = dat;
           (urls[i])();
           ret = return_code;
         } else if ((com[0] == 'j' && com[1] == 'o') ||
-                   (com[0] == 'j' &&
-                    com[1] == 'a')) { // for /jo and /ja we output fwv if
-                                      // password fails
-          if (check_password(dat) == false) {
-            print_json_header();
-            bfill.emit_p(PSTR("\"$F\":$D}"), iopt_json_names + 0, os.iopts[0]);
-            ret = HTML_OK;
-          } else {
-            get_buffer = dat;
-            (urls[i])();
-            ret = return_code;
-          }
+                   (com[0] == 'j' && com[1] == 'a')) {
+          get_buffer = dat;
+          (urls[i])();
+          ret = return_code;
         } else if (com[0] == 'd' && com[1] == 'b') {
           get_buffer = dat;
           (urls[i])();
           ret = return_code;
         } else {
-          // first check password
-          if (check_password(dat) == false) {
-            ret = HTML_UNAUTHORIZED;
-          } else {
-            get_buffer = dat;
-            (urls[i])();
-            ret = return_code;
-          }
+          get_buffer = dat;
+          (urls[i])();
+          ret = return_code;
         }
         if (ret == -1) {
           if (m_client)

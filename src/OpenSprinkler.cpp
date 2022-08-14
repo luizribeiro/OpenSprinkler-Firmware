@@ -92,7 +92,6 @@ const char iopt_json_names[] PROGMEM = "fwv\0\0"
                                        "rso\0\0"
                                        "wl\0\0\0"
                                        "den\0\0"
-                                       "ipas\0"
                                        "devid"
                                        "con\0\0"
                                        "lit\0\0"
@@ -135,7 +134,6 @@ const byte iopt_max[] PROGMEM = {0,                // fwv
                                  1,                // rso
                                  250,              // wl0
                                  1,                // den
-                                 1,                // ipas
                                  255,              // devid
                                  255,              // con
                                  255,              // lit
@@ -179,7 +177,6 @@ byte OpenSprinkler::iopts[] = {
     120,         // master off adjusted time (-10 minutes to 10 minutes)
     100,         // water level (default 100%),
     1,           // device enable
-    0,           // 1: ignore password; 0: use password
     0,           // device id
     80,          // boost time (only valid to DC and LATCH type)
     0,           // weather algorithm (0 means not using weather algorithm)
@@ -207,11 +204,10 @@ byte OpenSprinkler::iopts[] = {
 
 /** String option values (stored in RAM) */
 const char *OpenSprinkler::sopts[] = {
-    DEFAULT_PASSWORD,     DEFAULT_LOCATION,     DEFAULT_JAVASCRIPT_URL,
-    DEFAULT_WEATHER_URL,  DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING,
-    DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING,
-    DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING,
-    DEFAULT_EMPTY_STRING};
+    DEFAULT_LOCATION,     DEFAULT_JAVASCRIPT_URL, DEFAULT_WEATHER_URL,
+    DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING,   DEFAULT_EMPTY_STRING,
+    DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING,   DEFAULT_EMPTY_STRING,
+    DEFAULT_EMPTY_STRING, DEFAULT_EMPTY_STRING,   DEFAULT_EMPTY_STRING};
 
 /** Calculate local time (UTC time plus time zone offset) */
 time_t OpenSprinkler::now_tz() {
@@ -628,14 +624,6 @@ void OpenSprinkler::attribs_load() {
   }
 }
 
-/** verify if a string matches password */
-byte OpenSprinkler::password_verify(char *pw) {
-  return (file_cmp_block(SOPTS_FILENAME, pw, SOPT_PASSWORD * MAX_SOPTS_SIZE) ==
-          0)
-             ? 1
-             : 0;
-}
-
 // ==================
 // Schedule Functions
 // ==================
@@ -842,8 +830,6 @@ int8_t OpenSprinkler::send_http_request(char *server_with_port, char *p,
  * This function takes a remote station code,
  * parses it into remote IP, port, station index,
  * and makes a HTTP GET request.
- * The remote controller is assumed to have the same
- * password as the main controller
  */
 void OpenSprinkler::switch_remotestation(RemoteStationData *data, bool turnon) {
   RemoteStationData copy;
@@ -867,7 +853,7 @@ void OpenSprinkler::switch_remotestation(RemoteStationData *data, bool turnon) {
   // maximum allowed duration, and station will be turned off when off command
   // is sent
   uint16_t timer = iopts[IOPT_SPE_AUTO_REFRESH] ? 4 * MAX_NUM_STATIONS : 64800;
-  bf.emit_p(PSTR("GET /cm?pw=$O&sid=$D&en=$D&t=$D"), SOPT_PASSWORD,
+  bf.emit_p(PSTR("GET /cm?sid=$D&en=$D&t=$D"),
             (int)hex2ulong(copy.sid, sizeof(copy.sid)), turnon, timer);
   bf.emit_p(PSTR(" HTTP/1.0\r\nHOST: $D.$D.$D.$D\r\n\r\n"), ip[0], ip[1], ip[2],
             ip[3]);

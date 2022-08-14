@@ -217,8 +217,6 @@ public:
   static void sopt_load(byte oid, char *buf);
   static String sopt_load(byte oid);
 
-  static byte password_verify(char *pw); // verify password
-
   // -- controller operation
   static void enable();  // enable controller operation
   static void disable(); // disable controller operation, all stations will be

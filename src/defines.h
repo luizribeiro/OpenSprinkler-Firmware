@@ -143,8 +143,7 @@ typedef unsigned long ulong;
 #define DEFAULT_HTTP_PORT 8336
 
 /** Default string option values */
-#define DEFAULT_PASSWORD "a6d82bced638de3def1e9bbb4983225c" // md5 of 'opendoor'
-#define DEFAULT_LOCATION "42.36,-71.06"                     // Boston,MA
+#define DEFAULT_LOCATION "42.36,-71.06" // Boston,MA
 #define DEFAULT_JAVASCRIPT_URL "https://ui.opensprinkler.com/js"
 #define DEFAULT_WEATHER_URL "weather.opensprinkler.com"
 #define DEFAULT_EMPTY_STRING ""
@@ -165,7 +164,6 @@ enum {
   IOPT_MASTER_OFF_ADJ,
   IOPT_WATER_PERCENTAGE,
   IOPT_DEVICE_ENABLE, // editable through jc
-  IOPT_IGNORE_PASSWORD,
   IOPT_DEVICE_ID,
   IOPT_BOOST_TIME,
   IOPT_USE_WEATHER,
@@ -192,8 +190,7 @@ enum {
 };
 
 enum {
-  SOPT_PASSWORD = 0,
-  SOPT_LOCATION,
+  SOPT_LOCATION = 0,
   SOPT_JAVASCRIPTURL,
   SOPT_WEATHERURL,
   SOPT_WEATHER_OPTS,
