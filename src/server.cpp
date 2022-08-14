@@ -108,12 +108,6 @@ static const char htmlReturnHome[] PROGMEM =
 void print_html_standard_header() {
   bfill.emit_p(PSTR("$F$F$F$F\r\n"), html200OK, htmlContentHTML, htmlNoCache,
                htmlAccessControl);
-  // todo: streamline this part as well
-  /*m_client->write((const uint8_t *)html200OK, strlen(html200OK));
-  m_client->write((const uint8_t *)htmlContentHTML, strlen(htmlContentHTML));
-  m_client->write((const uint8_t *)htmlNoCache, strlen(htmlNoCache));
-  m_client->write((const uint8_t *)htmlAccessControl,
-  strlen(htmlAccessControl)); m_client->write((const uint8_t *)"\r\n", 2);*/
 }
 
 void print_json_header(bool bracket = true) {
@@ -121,13 +115,6 @@ void print_json_header(bool bracket = true) {
                htmlAccessControl, htmlNoCache);
   if (bracket)
     bfill.emit_p(PSTR("{"));
-  // todo: streamline
-  /*m_client->write((const uint8_t *)html200OK, strlen(html200OK));
-  m_client->write((const uint8_t *)htmlContentJSON, strlen(htmlContentJSON));
-  m_client->write((const uint8_t *)htmlNoCache, strlen(htmlNoCache));
-  m_client->write((const uint8_t *)htmlAccessControl,
-  strlen(htmlAccessControl)); if(bracket) m_client->write((const uint8_t
-  *)"\r\n{", 3); else m_client->write((const uint8_t *)"\r\n", 2);*/
 }
 
 byte findKeyVal(const char *str, char *strbuf, uint16_t maxlen, const char *key,
@@ -137,23 +124,20 @@ byte findKeyVal(const char *str, char *strbuf, uint16_t maxlen, const char *key,
   uint16_t i = 0;
   const char *kp;
   kp = key;
-  // for Linux, key_in_pgm is always false
-  {
-    while (*str && *str != ' ' && *str != '\n' && found == 0) {
-      if (*str == *kp) {
-        kp++;
-        if (*kp == '\0') {
-          str++;
-          kp = key;
-          if (*str == '=') {
-            found = 1;
-          }
-        }
-      } else {
+  while (*str && *str != ' ' && *str != '\n' && found == 0) {
+    if (*str == *kp) {
+      kp++;
+      if (*kp == '\0') {
+        str++;
         kp = key;
+        if (*str == '=') {
+          found = 1;
+        }
       }
-      str++;
+    } else {
+      kp = key;
     }
+    str++;
   }
   if (found == 1) {
     // copy the value to a buffer and terminate it with '\0'
@@ -801,9 +785,6 @@ void server_json_controller_main() {
                  (qid < 255) ? q->st : 0);
     bfill.emit_p((sid < os.nstations - 1) ? PSTR(",") : PSTR("]"));
   }
-
-  // bfill.emit_p(PSTR(",\"blynk\":\"$O\""), SOPT_BLYNK_TOKEN);
-  // bfill.emit_p(PSTR(",\"mqtt\":\"$O\""), SOPT_MQTT_IP);
 
   bfill.emit_p(PSTR("}"));
 }
