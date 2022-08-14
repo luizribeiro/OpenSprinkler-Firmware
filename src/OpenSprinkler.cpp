@@ -213,8 +213,10 @@ byte OpenSprinkler::iopts[] = {
     0, 0, 0,
     0, // this and next 3 bytes define static gateway ip
     0, 0, 0,
-    144, // this and next byte define http port number
-    31, OS_HW_VERSION,
+    // this and next byte define http port number
+    DEFAULT_HTTP_PORT & 0xFF, (DEFAULT_HTTP_PORT >> 8) & 0xFF,
+    // hardware version
+    OS_HW_VERSION,
     0,           // number of 8-station extension board. 0: no extension boards
     1,           // the option 'sequential' is now retired
     120,         // station delay time (-10 minutes to 10 minutes).

@@ -140,6 +140,8 @@ typedef unsigned long ulong;
 
 #define STATION_SPECIAL_DATA_SIZE (TMP_BUFFER_SIZE - STATION_NAME_SIZE - 12)
 
+#define DEFAULT_HTTP_PORT 8336
+
 /** Default string option values */
 #define DEFAULT_PASSWORD "a6d82bced638de3def1e9bbb4983225c" // md5 of 'opendoor'
 #define DEFAULT_LOCATION "42.36,-71.06"                     // Boston,MA
