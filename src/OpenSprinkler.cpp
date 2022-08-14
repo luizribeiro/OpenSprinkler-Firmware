@@ -120,70 +120,47 @@ const char iopt_json_names[] PROGMEM = "fwv\0\0"
                                        "reset";
 
 /** Option maximum values (stored in PROGMEM to reduce RAM usage) */
-const byte iopt_max[] PROGMEM = {0,
-                                 108,
-                                 1,
-                                 1,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 0,
-                                 MAX_EXT_BOARDS,
-                                 1,
-                                 255,
-                                 MAX_NUM_STATIONS,
-                                 255,
-                                 255,
-                                 255,
-                                 1,
-                                 250,
-                                 1,
-                                 1,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 250,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 1,
-                                 MAX_NUM_STATIONS,
-                                 255,
-                                 255,
-                                 0,
-                                 255,
-                                 255,
-                                 1,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 1,
-                                 255,
-                                 255,
-                                 1,
-                                 255,
-                                 1,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 255,
-                                 1};
+const byte iopt_max[] PROGMEM = {0,                // fwv
+                                 108,              // tz0
+                                 255,              // hp0
+                                 255,              // hp1
+                                 0,                // hwv
+                                 MAX_EXT_BOARDS,   // ext
+                                 1,                // seq
+                                 255,              // sdt
+                                 MAX_NUM_STATIONS, // mas
+                                 255,              // mton
+                                 255,              // mtof
+                                 255,              // urs
+                                 1,                // rso
+                                 250,              // wl0
+                                 1,                // den
+                                 1,                // ipas
+                                 255,              // devid
+                                 255,              // con
+                                 255,              // lit
+                                 255,              // dim
+                                 250,              // bst
+                                 255,              // uwt
+                                 1,                // lg0
+                                 MAX_NUM_STATIONS, // mas2
+                                 255,              // mton2
+                                 255,              // mtof2
+                                 0,                // fwm
+                                 255,              // fpr0
+                                 255,              // fpr1
+                                 1,                // re0
+                                 1,                // sar
+                                 255,              // sn1t
+                                 1,                // sn1o
+                                 255,              // sn2t
+                                 1,                // sn2o
+                                 255,              // sn1on
+                                 255,              // sn1of
+                                 255,              // sn2on
+                                 255,              // sn2of
+                                 255,              // wimod
+                                 1};               // reset
 
 // string options do not have maximum values
 
