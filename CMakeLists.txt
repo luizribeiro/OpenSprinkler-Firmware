@@ -6,3 +6,5 @@ add_executable(opensprinkler ${SRC})
 
 target_include_directories (opensprinkler PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(opensprinkler PUBLIC gpiod mosquitto)
+
+install (TARGETS opensprinkler DESTINATION bin)
