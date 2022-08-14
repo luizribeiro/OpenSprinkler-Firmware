@@ -728,11 +728,6 @@ void OpenSprinkler::get_station_data(byte sid, StationData* data) {
 	file_read_block(STATIONS_FILENAME, data, (uint32_t)sid*sizeof(StationData), sizeof(StationData));
 }
 
-/** Set station data */
-void OpenSprinkler::set_station_data(byte sid, StationData* data) {
-	file_write_block(STATIONS_FILENAME, data, (uint32_t)sid*sizeof(StationData), sizeof(StationData));
-}
-
 /** Get station name */
 void OpenSprinkler::get_station_name(byte sid, char tmp[]) {
 	tmp[STATION_NAME_SIZE]=0;
@@ -822,13 +817,6 @@ byte OpenSprinkler::password_verify(char *pw) {
 // ==================
 // Schedule Functions
 // ==================
-
-/** Index of today's weekday (Monday is 0) */
-byte OpenSprinkler::weekday_today() {
-	//return ((byte)weekday()+5)%7; // Time::weekday() assumes Sunday is 1
-	return 0;
-	// todo future: is this function needed for RPI/BBB?
-}
 
 /** Switch special station */
 void OpenSprinkler::switch_special_station(byte sid, byte value) {
@@ -1079,14 +1067,6 @@ void OpenSprinkler::switch_httpstation(HTTPStationData *data, bool turnon) {
 	bf.emit_p(PSTR("GET /$S HTTP/1.0\r\nHOST: $S\r\n\r\n"), cmd, server);
 
 	send_http_request(server, atoi(port), p, remote_http_callback);
-}
-
-/** Prepare factory reset */
-void OpenSprinkler::pre_factory_reset() {
-	// for ESP8266: wipe out flash
-	// remove 'done' file as an indicator for reset
-	// todo os2.3 and ospi: delete log files and/or wipe SD card
-	remove_file(DONE_FILENAME);
 }
 
 /** Factory reset */

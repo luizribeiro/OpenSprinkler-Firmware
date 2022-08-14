@@ -53,23 +53,6 @@ static volatile int		 pinPass = -1 ;
 static pthread_mutex_t pinMutex ;
 static struct gpiod_chip *chip = NULL;
 
-/** Export gpio pin */
-static byte GPIOExport(int pin) {
-	char buffer[BUFFER_MAX];
-	int fd, len;
-
-	fd = open("/sys/class/gpio/export", O_WRONLY);
-	if (fd < 0) {
-		DEBUG_PRINTLN("failed to open export for writing");
-		return 0;
-	}
-
-	len = snprintf(buffer, sizeof(buffer), "%d", pin);
-	write(fd, buffer, len);
-	close(fd);
-	return 1;
-}
-
 struct gpiod_chip *get_chip() {
   if (chip == NULL) {
     chip = gpiod_chip_open_by_name("gpiochip0");
@@ -119,57 +102,6 @@ void digitalWrite(int pin, byte value) {
   struct gpiod_chip *chip = get_chip();
   struct gpiod_line *line = gpiod_chip_get_line(chip, pin);
   gpiod_line_set_value(line, value);
-}
-
-static int HiPri (const int pri) {
-	struct sched_param sched ;
-
-	memset (&sched, 0, sizeof(sched)) ;
-
-	if (pri > sched_get_priority_max (SCHED_RR))
-		sched.sched_priority = sched_get_priority_max (SCHED_RR) ;
-	else
-		sched.sched_priority = pri ;
-
-	return sched_setscheduler (0, SCHED_RR, &sched) ;
-}
-
-static int waitForInterrupt (int pin, int mS)
-{
-	int fd, x ;
-	uint8_t c ;
-	struct pollfd polls ;
-
-	if((fd=sysFds[pin]) < 0)
-		return -2;
-
-	polls.fd		 = fd ;
-	polls.events = POLLPRI ;			// Urgent data!
-
-	x = poll (&polls, 1, mS) ;
-// Do a dummy read to clear the interrupt
-//			A one character read appars to be enough.
-//			Followed by a seek to reset it.
-
-	(void)read (fd, &c, 1);
-	lseek (fd, 0, SEEK_SET);
-
-	return x ;
-}
-
-static void *interruptHandler (void *arg) {
-	int myPin ;
-
-	(void) HiPri (55) ;  // Only effective if we run as root
-
-	myPin		= pinPass ;
-	pinPass = -1 ;
-
-	for (;;)
-		if (waitForInterrupt (myPin, -1) > 0)
-			isrFunctions[myPin]() ;
-
-	return NULL ;
 }
 
 #include "utils.h"
