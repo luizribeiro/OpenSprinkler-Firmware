@@ -18,12 +18,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see
- * <http://www.gnu.org/licenses/>. 
+ * <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "gpio.h"
 #include <gpiod.h>
-
 
 #include <sys/types.h>
 #include <sys/ioctl.h>
@@ -36,21 +35,21 @@
 #include <pthread.h>
 
 #define BUFFER_MAX 64
-#define GPIO_MAX	 64
+#define GPIO_MAX 64
 
 // GPIO file descriptors
 static int sysFds[GPIO_MAX] = {
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-} ;
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+};
 
 // Interrupt service routine functions
-static void (*isrFunctions [GPIO_MAX])(void);
+static void (*isrFunctions[GPIO_MAX])(void);
 
-static volatile int		 pinPass = -1 ;
-static pthread_mutex_t pinMutex ;
+static volatile int pinPass = -1;
+static pthread_mutex_t pinMutex;
 static struct gpiod_chip *chip = NULL;
 
 struct gpiod_chip *get_chip() {
@@ -65,26 +64,20 @@ void pinMode(int pin, byte mode) {
   struct gpiod_chip *chip = get_chip();
   struct gpiod_line *line = gpiod_chip_get_line(chip, pin);
   if (mode == INPUT || mode == INPUT_PULLUP) {
-    gpiod_line_request_input_flags(
-        line,
-        "opensprinkler",
-        mode == INPUT
-          ? GPIOD_CTXLESS_FLAG_BIAS_PULL_UP
-          : GPIOD_CTXLESS_FLAG_BIAS_DISABLE
-    );
+    gpiod_line_request_input_flags(line, "opensprinkler",
+                                   mode == INPUT
+                                       ? GPIOD_CTXLESS_FLAG_BIAS_PULL_UP
+                                       : GPIOD_CTXLESS_FLAG_BIAS_DISABLE);
   } else {
     gpiod_line_request_output(line, "opensprinkler", 0);
   }
 }
 
 /** Open file for digital pin */
-int gpio_fd_open(int pin, int mode) {
-  return 0;
-}
+int gpio_fd_open(int pin, int mode) { return 0; }
 
 /** Close file */
-void gpio_fd_close(int fd) {
-}
+void gpio_fd_close(int fd) {}
 
 /** Read digital value */
 byte digitalRead(int pin) {
@@ -94,8 +87,7 @@ byte digitalRead(int pin) {
 }
 
 /** Write digital value given file descriptor */
-void gpio_write(int fd, byte value) {
-}
+void gpio_write(int fd, byte value) {}
 
 /** Write digital value */
 void digitalWrite(int pin, byte value) {

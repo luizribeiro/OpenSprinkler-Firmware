@@ -25,7 +25,6 @@
 #ifndef _ETHERPORT_H_
 #define _ETHERPORT_H_
 
-
 #include <stdio.h>
 #include <inttypes.h>
 #include <ctype.h>
@@ -38,35 +37,34 @@ class EthernetServer;
 
 class EthernetClient {
 public:
-	EthernetClient();
-	EthernetClient(int sock);
-	~EthernetClient();
-	int connect(uint8_t ip[4], uint16_t port);
-	bool connected();
-	void stop();
-	int read(uint8_t *buf, size_t size);
-	size_t write(const uint8_t *buf, size_t size);
-	operator bool();
-	int GetSocket()
-	{
-		return m_sock;
-	}
+  EthernetClient();
+  EthernetClient(int sock);
+  ~EthernetClient();
+  int connect(uint8_t ip[4], uint16_t port);
+  bool connected();
+  void stop();
+  int read(uint8_t *buf, size_t size);
+  size_t write(const uint8_t *buf, size_t size);
+  operator bool();
+  int GetSocket() { return m_sock; }
+
 private:
-	int m_sock;
-	bool m_connected;
-	friend class EthernetServer;
+  int m_sock;
+  bool m_connected;
+  friend class EthernetServer;
 };
 
 class EthernetServer {
 public:
-	EthernetServer(uint16_t port);
-	~EthernetServer();
+  EthernetServer(uint16_t port);
+  ~EthernetServer();
 
-	bool begin();
-	EthernetClient available();
+  bool begin();
+  EthernetClient available();
+
 private:
-	uint16_t m_port;
-	int m_sock;
+  uint16_t m_port;
+  int m_sock;
 };
 
 #endif /* _ETHERPORT_H_ */

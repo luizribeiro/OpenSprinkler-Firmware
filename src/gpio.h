@@ -18,12 +18,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see
- * <http://www.gnu.org/licenses/>. 
+ * <http://www.gnu.org/licenses/>.
  */
 
 #ifndef GPIO_H
 #define GPIO_H
-
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -31,12 +30,12 @@
 
 #include "defines.h"
 #define OUTPUT 0
-#define INPUT  1
+#define INPUT 1
 
 #define INPUT_PULLUP 2
 
-#define HIGH	 1
-#define LOW		 0
+#define HIGH 1
+#define LOW 0
 
 void pinMode(int pin, byte mode);
 void digitalWrite(int pin, byte value);
@@ -44,6 +43,5 @@ int gpio_fd_open(int pin, int mode = O_WRONLY);
 void gpio_fd_close(int fd);
 void gpio_write(int fd, byte value);
 byte digitalRead(int pin);
-
 
 #endif // GPIO_H
