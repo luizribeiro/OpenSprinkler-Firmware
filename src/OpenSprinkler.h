@@ -27,7 +27,6 @@
 #include "defines.h"
 #include "utils.h"
 #include "gpio.h"
-#include "images.h"
 #include "mqtt.h"
 
 #include <time.h>
