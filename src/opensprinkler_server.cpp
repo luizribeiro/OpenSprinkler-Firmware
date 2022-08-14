@@ -646,13 +646,6 @@ void server_change_program() {
 void server_json_options_main() {
   byte oid;
   for (oid = 0; oid < NUM_IOPTS; oid++) {
-    if (oid == IOPT_USE_DHCP ||
-        (oid >= IOPT_STATIC_IP1 && oid <= IOPT_STATIC_IP4) ||
-        (oid >= IOPT_GATEWAY_IP1 && oid <= IOPT_GATEWAY_IP4) ||
-        (oid >= IOPT_DNS_IP1 && oid <= IOPT_DNS_IP4) ||
-        (oid >= IOPT_SUBNET_MASK1 && oid <= IOPT_SUBNET_MASK4))
-      continue;
-
     int32_t v = os.iopts[oid];
     if (oid == IOPT_MASTER_OFF_ADJ || oid == IOPT_MASTER_OFF_ADJ_2 ||
         oid == IOPT_MASTER_ON_ADJ || oid == IOPT_MASTER_ON_ADJ_2 ||

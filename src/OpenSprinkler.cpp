@@ -79,15 +79,6 @@ byte OpenSprinkler::pin_sr_data = PIN_SR_DATA;
 // for Integer options
 const char iopt_json_names[] PROGMEM = "fwv\0\0"
                                        "tz\0\0\0"
-                                       "dhcp\0"
-                                       "ip1\0\0"
-                                       "ip2\0\0"
-                                       "ip3\0\0"
-                                       "ip4\0\0"
-                                       "gw1\0\0"
-                                       "gw2\0\0"
-                                       "gw3\0\0"
-                                       "gw4\0\0"
                                        "hp0\0\0"
                                        "hp1\0\0"
                                        "hwv\0\0"
@@ -116,10 +107,6 @@ const char iopt_json_names[] PROGMEM = "fwv\0\0"
                                        "fpr0\0"
                                        "fpr1\0"
                                        "re\0\0\0"
-                                       "dns1\0"
-                                       "dns2\0"
-                                       "dns3\0"
-                                       "dns4\0"
                                        "sar\0\0"
                                        "sn1t\0"
                                        "sn1o\0"
@@ -129,10 +116,6 @@ const char iopt_json_names[] PROGMEM = "fwv\0\0"
                                        "sn1of"
                                        "sn2on"
                                        "sn2of"
-                                       "subn1"
-                                       "subn2"
-                                       "subn3"
-                                       "subn4"
                                        "wimod"
                                        "reset";
 
@@ -208,11 +191,6 @@ const byte iopt_max[] PROGMEM = {0,
 byte OpenSprinkler::iopts[] = {
     OS_FW_VERSION, // firmware version
     28,            // default time zone: GMT-5
-    1,             // 0: use static ip, 1: use dhcp
-    0,             // this and next 3 bytes define static ip
-    0, 0, 0,
-    0, // this and next 3 bytes define static gateway ip
-    0, 0, 0,
     // this and next byte define http port number
     DEFAULT_HTTP_PORT & 0xFF, (DEFAULT_HTTP_PORT >> 8) & 0xFF,
     // hardware version
@@ -242,22 +220,16 @@ byte OpenSprinkler::iopts[] = {
     100,         // this and next byte define flow pulse rate (100x)
     0,           // default is 1.00 (100)
     0,           // set as remote extension
-    8, // this and the next three bytes define the custom dns server ip
-    8, 8, 8,
-    0,   // special station auto refresh
-    0,   // sensor 1 type (see SENSOR_TYPE macro defines)
-    1,   // sensor 1 option. 0: normally closed; 1: normally open.
-         // default 1.
-    0,   // sensor 2 type
-    1,   // sensor 2 option. 0: normally closed; 1: normally open. default 1.
-    0,   // sensor 1 on delay
-    0,   // sensor 1 off delay
-    0,   // sensor 2 on delay
-    0,   // sensor 2 off delay
-    255, // subnet mask 1
-    255, // subnet mask 2
-    255, // subnet mask 3
-    0,
+    0,           // special station auto refresh
+    0,           // sensor 1 type (see SENSOR_TYPE macro defines)
+    1,           // sensor 1 option. 0: normally closed; 1: normally open.
+                 // default 1.
+    0,           // sensor 2 type
+    1, // sensor 2 option. 0: normally closed; 1: normally open. default 1.
+    0, // sensor 1 on delay
+    0, // sensor 1 off delay
+    0, // sensor 2 on delay
+    0, // sensor 2 off delay
     WIFI_MODE_AP, // wifi mode
     0             // reset
 };
