@@ -105,7 +105,6 @@ struct ConStatus {
       has_curr_sense : 1; // HIGH means the controller has a current sensing pin
   byte safe_reboot : 1;   // HIGH means a safe reboot has been marked
   byte req_network : 1;   // request check network
-  byte display_board : 5; // the board that is being displayed onto the lcd
   byte network_fails : 3; // number of network fails
   byte mas : 8;           // master station index
   byte mas2 : 8;          // master2 station index
@@ -123,8 +122,6 @@ extern const uint8_t iopt_max[];
 class OpenSprinkler {
 public:
   // data members
-  // todo: LCD define for RPI/BBB
-
   static byte pin_sr_data; // RPi shift register data pin
                            // to handle RPi rev. 1
 
@@ -258,7 +255,6 @@ public:
   static int8_t send_http_request(char *server_with_port, char *p,
                                   void (*callback)(char *) = NULL,
                                   uint16_t timeout = 3000);
-  // -- LCD functions
   static byte engage_booster;
 };
 

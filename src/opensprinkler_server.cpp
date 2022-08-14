@@ -660,11 +660,6 @@ void server_json_options_main() {
         oid == IOPT_RSO_RETIRED)
       continue;
 
-    // for Linux-based platforms, there is no LCD currently
-    if (oid == IOPT_LCD_CONTRAST || oid == IOPT_LCD_BACKLIGHT ||
-        oid == IOPT_LCD_DIMMING)
-      continue;
-
     // each json name takes 5 characters
     strncpy_P0(tmp_buffer, iopt_json_names + oid * 5, 5);
     bfill.emit_p(PSTR("\"$S\":$D"), tmp_buffer, v);

@@ -44,9 +44,8 @@ void remote_http_callback(char *);
 #define CHECK_NETWORK_INTERVAL 601   // Network checking timeout (in seconds)
 #define CHECK_WEATHER_TIMEOUT 21613L // Weather check interval (in seconds)
 #define CHECK_WEATHER_SUCCESS_TIMEOUT                                          \
-  86400L                         // Weather check success interval (in seconds)
-#define LCD_BACKLIGHT_TIMEOUT 15 // LCD backlight timeout (in seconds))
-#define PING_TIMEOUT 200         // Ping test timeout (in ms)
+  86400L                 // Weather check success interval (in seconds)
+#define PING_TIMEOUT 200 // Ping test timeout (in ms)
 #define UI_STATE_MACHINE_INTERVAL                                              \
   50                          // how often does ui_state_machine run (in ms)
 #define CLIENT_READ_TIMEOUT 5 // client read timeout (in seconds)

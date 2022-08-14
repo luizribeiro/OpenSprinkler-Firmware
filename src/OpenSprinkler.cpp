@@ -207,9 +207,6 @@ byte OpenSprinkler::iopts[] = {
     1,           // device enable
     0,           // 1: ignore password; 0: use password
     0,           // device id
-    150,         // lcd contrast
-    100,         // lcd backlight
-    50,          // lcd dimming
     80,          // boost time (only valid to DC and LATCH type)
     0,           // weather algorithm (0 means not using weather algorithm)
     1,           // enable logging: 0: disable; 1: enable.
@@ -312,7 +309,7 @@ void OpenSprinkler::reboot_dev(uint8_t cause) {
   reboot(RB_AUTOBOOT);
 }
 
-/** Initialize pins, controller variables, LCD */
+/** Initialize pins, controller variables */
 void OpenSprinkler::begin() {
 
   hw_type = HW_TYPE_UNKNOWN;
@@ -1102,5 +1099,3 @@ void OpenSprinkler::raindelay_stop() {
   nvdata.rd_stop_time = 0;
   nvdata_save();
 }
-
-/** LCD and button functions */
