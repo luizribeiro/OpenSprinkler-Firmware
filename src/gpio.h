@@ -24,11 +24,12 @@
 #ifndef GPIO_H
 #define GPIO_H
 
+#include "defines.h"
+
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdio.h>
 
-#include "defines.h"
 #define OUTPUT 0
 #define INPUT 1
 

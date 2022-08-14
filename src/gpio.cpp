@@ -24,18 +24,6 @@
 #include "gpio.h"
 #include <gpiod.h>
 
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <poll.h>
-#include <pthread.h>
-
-#define GPIO_MAX 64
-
 static struct gpiod_chip *chip = NULL;
 
 struct gpiod_chip *get_chip() {

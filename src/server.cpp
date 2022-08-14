@@ -22,16 +22,14 @@
  */
 
 #include "OpenSprinkler.h"
+#include "etherport.h"
+#include "mqtt.h"
 #include "program.h"
 #include "server.h"
 #include "weather.h"
-#include "mqtt.h"
-
-// External variables defined in main ion file
 
 #include <stdarg.h>
 #include <stdlib.h>
-#include "etherport.h"
 
 extern EthernetClient *m_client;
 #define handle_return(x)                                                       \
@@ -80,29 +78,24 @@ int available_ether_buffer() {
 #define HTML_UPLOAD_FAILED 0x40
 #define HTML_REDIRECT_HOME 0xFF
 
-static const char html200OK[] PROGMEM = "HTTP/1.1 200 OK\r\n";
+static const char html200OK[] = "HTTP/1.1 200 OK\r\n";
 
-static const char htmlCacheCtrl[] PROGMEM =
-    "Cache-Control: max-age=604800, public\r\n";
-
-static const char htmlNoCache[] PROGMEM =
+static const char htmlNoCache[] =
     "Cache-Control: max-age=0, no-cache, no-store, must-revalidate\r\n";
 
-static const char htmlContentHTML[] PROGMEM = "Content-Type: text/html\r\n";
+static const char htmlContentHTML[] = "Content-Type: text/html\r\n";
 
-static const char htmlAccessControl[] PROGMEM =
-    "Access-Control-Allow-Origin: *\r\n";
+static const char htmlAccessControl[] = "Access-Control-Allow-Origin: *\r\n";
 
-static const char htmlContentJSON[] PROGMEM =
-    "Content-Type: application/json\r\n"
-    "Connection: close\r\n";
+static const char htmlContentJSON[] = "Content-Type: application/json\r\n"
+                                      "Connection: close\r\n";
 
-static const char htmlMobileHeader[] PROGMEM =
+static const char htmlMobileHeader[] =
     "<meta name=\"viewport\" "
     "content=\"width=device-width,initial-scale=1.0,minimum-scale=1.0,user-"
     "scalable=no\">\r\n";
 
-static const char htmlReturnHome[] PROGMEM =
+static const char htmlReturnHome[] =
     "<script>window.location=\"/\";</script>\n";
 
 void print_html_standard_header() {
@@ -505,7 +498,7 @@ void server_moveup_program() {
  * dur?:	station water time
  * name:	program name
  */
-const char _str_program[] PROGMEM = "Program ";
+const char _str_program[] = "Program ";
 void server_change_program() {
   char *p = get_buffer;
 
@@ -1239,26 +1232,26 @@ typedef void (*URLHandler)(void);
  * The order must exactly match the order of the
  * handler functions below
  */
-const char _url_keys[] PROGMEM = "cv"
-                                 "jc"
-                                 "dp"
-                                 "cp"
-                                 "cr"
-                                 "mp"
-                                 "up"
-                                 "jp"
-                                 "co"
-                                 "jo"
-                                 "js"
-                                 "cm"
-                                 "cs"
-                                 "jn"
-                                 "je"
-                                 "jl"
-                                 "dl"
-                                 "su"
-                                 "cu"
-                                 "ja";
+const char _url_keys[] = "cv"
+                         "jc"
+                         "dp"
+                         "cp"
+                         "cr"
+                         "mp"
+                         "up"
+                         "jp"
+                         "co"
+                         "jo"
+                         "js"
+                         "cm"
+                         "cs"
+                         "jn"
+                         "je"
+                         "jl"
+                         "dl"
+                         "su"
+                         "cu"
+                         "ja";
 
 // Server function handlers
 URLHandler urls[] = {

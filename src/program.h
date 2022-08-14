@@ -24,12 +24,13 @@
 #ifndef _PROGRAM_H
 #define _PROGRAM_H
 
+#include "OpenSprinkler.h"
+
 #define MAX_NUM_PROGRAMS 40 // maximum number of programs
 #define MAX_NUM_STARTTIMES 4
 #define PROGRAM_NAME_SIZE 32
 #define RUNTIME_QUEUE_SIZE MAX_NUM_STATIONS
 #define PROGRAMSTRUCT_SIZE sizeof(ProgramStruct)
-#include "OpenSprinkler.h"
 
 /** Log data structure */
 struct LogStruct {
@@ -94,8 +95,8 @@ public:
   //	 if bit 14 == 1 : sunrise time +/- offset (by lowest 12 bits)
   //	 or bit 13 == 1 : sunset	time +/- offset (by lowest 12 bits)
   //			bit 12			: sign, 0 is positive, 1 is
-  //negative 			bit 11			: not used, reserved 	 else: standard
-  //start time (value between 0 to 1440, by bits 0 to 10)
+  // negative 			bit 11			: not used, reserved 	 else:
+  // standard start time (value between 0 to 1440, by bits 0 to 10)
   int16_t starttimes[MAX_NUM_STARTTIMES];
 
   uint16_t durations[MAX_NUM_STATIONS]; // duration / water time of each station

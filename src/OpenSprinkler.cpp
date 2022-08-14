@@ -23,8 +23,11 @@
 
 #include "OpenSprinkler.h"
 #include "server.h"
-#include "gpio.h"
-#include "testmode.h"
+
+#include <sys/reboot.h>
+#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
 
 /** Declare static data members */
 OSMqtt OpenSprinkler::mqtt;
@@ -213,14 +216,6 @@ const char *OpenSprinkler::sopts[] = {
 time_t OpenSprinkler::now_tz() {
   return now() + (int32_t)3600 / 4 * (int32_t)(iopts[IOPT_TIMEZONE] - 48);
 }
-
-#include "etherport.h"
-#include <sys/reboot.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include "utils.h"
-#include "server.h"
 
 /** Initialize network with the given mac address and http port */
 byte OpenSprinkler::start_network() {

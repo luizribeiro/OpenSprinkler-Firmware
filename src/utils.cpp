@@ -23,6 +23,7 @@
 
 #include "utils.h"
 #include "OpenSprinkler.h"
+
 extern OpenSprinkler os;
 
 char *get_runtime_path() {

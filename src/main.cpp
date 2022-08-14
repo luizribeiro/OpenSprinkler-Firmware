@@ -983,13 +983,13 @@ void make_logfile_name(char *name) {
  * must be strictly two characters with an ending 0
  * so each name is 3 characters total
  */
-static const char log_type_names[] PROGMEM = "  \0"
-                                             "s1\0"
-                                             "rd\0"
-                                             "wl\0"
-                                             "fl\0"
-                                             "s2\0"
-                                             "cu\0";
+static const char log_type_names[] = "  \0"
+                                     "s1\0"
+                                     "rd\0"
+                                     "wl\0"
+                                     "fl\0"
+                                     "s2\0"
+                                     "cu\0";
 
 /** write run record to log on SD card */
 void write_log(byte type, ulong curr_time) {

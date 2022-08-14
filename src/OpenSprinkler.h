@@ -25,16 +25,16 @@
 #define _OPENSPRINKLER_H
 
 #include "defines.h"
-#include "utils.h"
+#include "etherport.h"
 #include "gpio.h"
 #include "mqtt.h"
+#include "utils.h"
 
-#include <time.h>
-#include <string.h>
-#include <unistd.h>
 #include <netdb.h>
+#include <string.h>
 #include <sys/stat.h>
-#include "etherport.h"
+#include <time.h>
+#include <unistd.h>
 
 /** Non-volatile data structure */
 struct NVConData {

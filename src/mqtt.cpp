@@ -25,10 +25,10 @@
 #include <stdio.h>
 #include <mosquitto.h>
 
-struct mosquitto *mqtt_client = NULL;
-
 #include "OpenSprinkler.h"
 #include "mqtt.h"
+
+struct mosquitto *mqtt_client = NULL;
 
 // Debug routines to help identify any blocking of the event loop for an
 // extended period
@@ -133,7 +133,8 @@ void OSMqtt::begin(void) {
                                "d,\"user\":"
                                "\"%" xstr(
                                    MQTT_MAX_USERNAME_LEN) "[^\"]\",\"pass\":"
-                                                          "\"%" xstr(MQTT_MAX_PASSWORD_LEN) "[^\"]\"",
+                                                          "\"%" xstr(
+                                                              MQTT_MAX_PASSWORD_LEN) "[^\"]\"",
         &enabled, host, &port, username, password);
   }
 

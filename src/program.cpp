@@ -22,6 +22,7 @@
  */
 
 #include <limits.h>
+
 #include "program.h"
 
 #define SECS_PER_MIN (60UL)

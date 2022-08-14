@@ -24,6 +24,12 @@
 #ifndef _DEFINES_H
 #define _DEFINES_H
 
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <string>
+
 //#define ENABLE_DEBUG  // enable serial debug
 
 typedef unsigned char byte;
@@ -237,7 +243,6 @@ enum {
 
 #if defined(ENABLE_DEBUG) /** Serial debug functions */
 
-#include <stdio.h>
 #define DEBUG_BEGIN(x)                                                         \
   {} /** Serial debug functions */
 inline void DEBUG_PRINT(int x) { printf("%d", x); }
@@ -259,11 +264,6 @@ inline void DEBUG_PRINT(const char *s) { printf("%s", s); }
 
 #endif
 
-/** Re-define avr-specific (e.g. PGM) types to use standard types */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stddef.h>
 inline void itoa(int v, char *s, int b) { sprintf(s, "%d", v); }
 inline void ultoa(unsigned long v, char *s, int b) { sprintf(s, "%lu", v); }
 #define now() time(0)
@@ -273,7 +273,6 @@ inline void ultoa(unsigned long v, char *s, int b) { sprintf(s, "%lu", v); }
 #define strcat_P strcat
 #define strcpy_P strcpy
 #define sprintf_P sprintf
-#include <string>
 #define String string
 using namespace std;
 #define PROGMEM
