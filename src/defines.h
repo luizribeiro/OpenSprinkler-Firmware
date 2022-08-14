@@ -143,7 +143,7 @@ typedef unsigned long ulong;
 #define DEFAULT_HTTP_PORT 8336
 
 /** Default string option values */
-#define DEFAULT_LOCATION "42.36,-71.06" // Boston,MA
+#define DEFAULT_LOCATION "40.71,-74.01" // NYC
 #define DEFAULT_JAVASCRIPT_URL "https://ui.opensprinkler.com/js"
 #define DEFAULT_WEATHER_URL "weather.opensprinkler.com"
 #define DEFAULT_EMPTY_STRING ""
