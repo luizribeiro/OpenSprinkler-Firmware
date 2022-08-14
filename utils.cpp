@@ -25,17 +25,6 @@
 #include "OpenSprinkler.h"
 extern OpenSprinkler os;
 
-#if defined(ARDUINO)	// Arduino
-
-	#if defined(ESP8266)
-		#include <FS.h>
-	#else
-		#include <avr/eeprom.h>
-		#include "SdFat.h"
-		extern SdFat sd;
-	#endif
-
-#else // RPI/BBB
 
 char* get_runtime_path() {
 	static char path[PATH_MAX];
@@ -142,7 +131,6 @@ ulong micros (void)
 	return (ulong)(now - epochMicro) ;
 }
 
-#if defined(OSPI)
 unsigned int detect_rpi_rev() {
 	FILE * filp;
 	unsigned int rev;
@@ -165,43 +153,10 @@ unsigned int detect_rpi_rev() {
 	}
 	return rev;
 }
-#endif
 
-#endif
 
 void write_to_file(const char *fn, const char *data, ulong size, ulong pos, bool trunc) {
 
-#if defined(ESP8266)
-
-	File f;
-	if(trunc) {
-		f = SPIFFS.open(fn, "w");
-	} else {
-		f = SPIFFS.open(fn, "r+");
-		if(!f) f = SPIFFS.open(fn, "w");
-	}		 
-	if(!f) return;
-	if(pos) f.seek(pos, SeekSet);
-	if(size==0) {
-		f.write((byte*)" ", 1);  // hack to circumvent SPIFFS bug involving writing empty file
-	} else {
-		f.write((byte*)data, size);
-	}
-	f.close();
-	
-#elif defined(ARDUINO)
-
-	sd.chdir("/");
-	SdFile file;
-	int flag = O_CREAT | O_RDWR;
-	if(trunc) flag |= O_TRUNC;
-	int ret = file.open(fn, flag);
-	if(!ret) return;
-	file.seekSet(pos);
-	file.write(data, size);
-	file.close();
-	
-#else
 
 	FILE *file;
 	if(trunc) {
@@ -215,41 +170,9 @@ void write_to_file(const char *fn, const char *data, ulong size, ulong pos, bool
 	fwrite(data, 1, size, file);
 	fclose(file);
 	
-#endif
 }
 
 void read_from_file(const char *fn, char *data, ulong maxsize, ulong pos) {
-#if defined(ESP8266)
-
-	File f = SPIFFS.open(fn, "r");
-	if(!f) {
-		data[0]=0;
-		return;  // return with empty string
-	}
-	if(pos)  f.seek(pos, SeekSet);
-	int len = f.read((byte*)data, maxsize);
-	if(len>0) data[len]=0;
-	if(len==1 && data[0]==' ') data[0] = 0;  // hack to circumvent SPIFFS bug involving writing empty file
-	data[maxsize-1]=0;
-	f.close();
-	return;
-
-#elif defined(ARDUINO)
-
-	sd.chdir("/");
-	SdFile file;
-	int ret = file.open(fn, O_READ);
-	if(!ret) {
-		data[0]=0;
-		return;  // return with empty string
-	}
-	file.seekSet(pos);
-	ret = file.fgets(data, maxsize);
-	data[maxsize-1]=0;
-	file.close();
-	return;
-
-#else
 
 	FILE *file;
 	file = fopen(get_filename_fullpath(fn), "rb");
@@ -273,71 +196,25 @@ void read_from_file(const char *fn, char *data, ulong maxsize, ulong pos) {
 	fclose(file);
 	return;
 
-#endif
 }
 
 void remove_file(const char *fn) {
-#if defined(ESP8266)
-
-	if(!SPIFFS.exists(fn)) return;
-	SPIFFS.remove(fn);
-
-#elif defined(ARDUINO)
-
-	sd.chdir("/");
-	if (!sd.exists(fn))  return;
-	sd.remove(fn);
-
-#else
 
 	remove(get_filename_fullpath(fn));
 
-#endif
 }
 
 bool file_exists(const char *fn) {
-#if defined(ESP8266)
-
-	return SPIFFS.exists(fn);
-
-#elif defined(ARDUINO)
-
-	sd.chdir("/");
-	return sd.exists(fn);
-
-#else
 
 	FILE *file;
 	file = fopen(get_filename_fullpath(fn), "rb");
 	if(file) {fclose(file); return true;}
 	else {return false;}
 
-#endif
 }
 
 // file functions
 void file_read_block(const char *fn, void *dst, ulong pos, ulong len) {
-#if defined(ESP8266)
-
-	// do not use File.readBytes or readBytesUntil because it's very slow  
-	File f = SPIFFS.open(fn, "r");
-	if(f) {
-		f.seek(pos, SeekSet);
-		f.read((byte*)dst, len);
-		f.close();
-	}
-
-#elif defined(ARDUINO)
-
-	sd.chdir("/");
-	SdFile file;
-	if(file.open(fn, O_READ)) {
-		file.seekSet(pos);
-		file.read(dst, len);
-		file.close();
-	}
-
-#else
 
 	FILE *fp = fopen(get_filename_fullpath(fn), "rb");
 	if(fp) {
@@ -346,31 +223,9 @@ void file_read_block(const char *fn, void *dst, ulong pos, ulong len) {
 		fclose(fp);
 	}  
 
-#endif
 }
 
 void file_write_block(const char *fn, const void *src, ulong pos, ulong len) {
-#if defined(ESP8266)
-
-	File f = SPIFFS.open(fn, "r+");
-	if(!f) f = SPIFFS.open(fn, "w");
-	if(f) {
-		f.seek(pos, SeekSet);
-		f.write((byte*)src, len);
-		f.close();
-	}
-
-#elif defined(ARDUINO)
-
-	sd.chdir("/");
-	SdFile file;
-	int ret = file.open(fn, O_CREAT | O_RDWR);
-	if(!ret) return;
-	file.seekSet(pos);
-	file.write(src, len);
-	file.close();
-
-#else
 
 	FILE *fp = fopen(get_filename_fullpath(fn), "rb+");
 	if(!fp) {
@@ -382,7 +237,6 @@ void file_write_block(const char *fn, const void *src, ulong pos, ulong len) {
 		fclose(fp);
 	}
 
-#endif
 
 }
 
@@ -390,29 +244,6 @@ void file_copy_block(const char *fn, ulong from, ulong to, ulong len, void *tmp)
 	// assume tmp buffer is provided and is larger than len
 	// todo future: if tmp buffer is not provided, do byte-to-byte copy
 	if(tmp==NULL) { return; }
-#if defined(ESP8266)
-
-	File f = SPIFFS.open(fn, "r+");
-	if(!f) return;
-	f.seek(from, SeekSet);
-	f.read((byte*)tmp, len);
-	f.seek(to, SeekSet);
-	f.write((byte*)tmp, len);
-	f.close();
-
-#elif defined(ARDUINO)
-
-	sd.chdir("/");
-	SdFile file;
-	int ret = file.open(fn, O_RDWR);
-	if(!ret) return;
-	file.seekSet(from);
-	file.read(tmp, len);
-	file.seekSet(to);
-	file.write(tmp, len);
-	file.close();
-
-#else
 
 	FILE *fp = fopen(get_filename_fullpath(fn), "rb+");
 	if(!fp) return;
@@ -422,42 +253,11 @@ void file_copy_block(const char *fn, ulong from, ulong to, ulong len, void *tmp)
 	fwrite(tmp, 1, len, fp);
 	fclose(fp);
 
-#endif
 
 }
 
 // compare a block of content
 byte file_cmp_block(const char *fn, const char *buf, ulong pos) {
-#if defined(ESP8266)
-
-	File f = SPIFFS.open(fn, "r");
-	if(f) {
-		f.seek(pos, SeekSet);
-		char c = f.read();
-		while(*buf && (c==*buf)) {
-			buf++;
-			c=f.read();
-		}
-		f.close();
-		return (*buf==c)?0:1;
-	}
-
-#elif defined(ARDUINO)
-
-	sd.chdir("/");
-	SdFile file;
-	if(file.open(fn, O_READ)) {
-		file.seekSet(pos);
-		char c = file.read();
-		while(*buf && (c==*buf)) {
-			buf++;
-			c=file.read();
-		}
-		file.close();
-		return (*buf==c)?0:1;
-	}
-
-#else
 
 	FILE *fp = fopen(get_filename_fullpath(fn), "rb");
 	if(fp) {
@@ -471,7 +271,6 @@ byte file_cmp_block(const char *fn, const char *buf, ulong pos) {
 		return (*buf==c)?0:1;
 	}  
 
-#endif
 	return 1;
 }
 

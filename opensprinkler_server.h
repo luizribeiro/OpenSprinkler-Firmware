@@ -24,9 +24,7 @@
 #ifndef _OPENSPRINKLER_SERVER_H
 #define _OPENSPRINKLER_SERVER_H
 
-#if !defined(ARDUINO)
 #include <stdarg.h>
-#endif
 
 char dec2hexchar(byte dec);
 

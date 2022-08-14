@@ -24,11 +24,9 @@
 #include <limits.h>
 #include "program.h"
 
-#if !defined(SECS_PER_DAY)
 #define SECS_PER_MIN	(60UL)
 #define SECS_PER_HOUR (3600UL)
 #define SECS_PER_DAY	(SECS_PER_HOUR * 24UL)
-#endif
 
 // Declare static data members
 byte ProgramData::nprograms = 0;
@@ -174,17 +172,11 @@ int16_t ProgramStruct::starttime_decode(int16_t t) {
 /** Check if a given time matches the program's start day */
 byte ProgramStruct::check_day_match(time_t t) {
 
-#if defined(ARDUINO) // get current time from Arduino
-	byte weekday_t = weekday(t);				// weekday ranges from [0,6] within Sunday being 1
-	byte day_t = day(t);
-	byte month_t = month(t);
-#else // get current time from RPI/BBB
 	time_t ct = t;
 	struct tm *ti = gmtime(&ct);
 	byte weekday_t = (ti->tm_wday+1)%7;  // tm_wday ranges from [0,6] with Sunday being 0
 	byte day_t = ti->tm_mday;
 	byte month_t = ti->tm_mon+1;	 // tm_mon ranges from [0,11]
-#endif // get current time
 
 	byte wd = (weekday_t+5)%7;
 	byte dt = day_t;

@@ -18,22 +18,3 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#if defined(ESP8266)
-
-#ifndef _ESP_CONNECT_H
-#define _ESP_CONNECT_H
-
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
-#include <WiFiUdp.h>
-#include "time.h"
-#include "defines.h"
-#include "htmls.h"
-
-String scan_network();
-void start_network_ap(const char *ssid, const char *pass);
-void start_network_sta(const char *ssid, const char *pass);
-void start_network_sta_with_ap(const char *ssid, const char *pass);
-#endif
-
-#endif

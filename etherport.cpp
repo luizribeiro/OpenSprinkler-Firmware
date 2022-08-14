@@ -22,9 +22,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#if defined(ARDUINO)
-
-#else
 
 #include "etherport.h"
 #include <stdarg.h>
@@ -203,4 +200,3 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size)
 	return ::send(m_sock, buf, size, MSG_NOSIGNAL);
 }
 
-#endif

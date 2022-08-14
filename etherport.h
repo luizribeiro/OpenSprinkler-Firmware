@@ -25,9 +25,6 @@
 #ifndef _ETHERPORT_H_
 #define _ETHERPORT_H_
 
-#if defined(ARDUINO)
-
-#else // headers for RPI/BBB
 
 #include <stdio.h>
 #include <inttypes.h>
@@ -71,6 +68,5 @@ private:
 	uint16_t m_port;
 	int m_sock;
 };
-#endif
 
 #endif /* _ETHERPORT_H_ */
