@@ -1130,7 +1130,7 @@ void server_json_log() {
     itoa(i, tmp_buffer, 10);
     make_logfile_name(tmp_buffer);
 
-    FILE *file = fopen(get_filename_fullpath(tmp_buffer), "rb");
+    FILE *file = fopen(tmp_buffer, "rb");
     if (!file)
       continue;
 

@@ -325,8 +325,6 @@ void OpenSprinkler::begin() {
   // set rf data pin
   pinMode(PIN_RFTX, OUTPUT);
   digitalWrite(PIN_RFTX, LOW);
-
-  DEBUG_PRINTLN(get_runtime_path());
 }
 
 /** Apply all station bits

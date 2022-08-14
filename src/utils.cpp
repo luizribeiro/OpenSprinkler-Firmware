@@ -26,32 +26,6 @@
 
 extern OpenSprinkler os;
 
-char *get_runtime_path() {
-  static char path[PATH_MAX];
-  static byte query = 1;
-
-  if (query) {
-    if (readlink("/proc/self/exe", path, PATH_MAX) <= 0) {
-      return NULL;
-    }
-    char *path_end = strrchr(path, '/');
-    if (path_end == NULL) {
-      return NULL;
-    }
-    path_end++;
-    *path_end = 0;
-    query = 0;
-  }
-  return path;
-}
-
-char *get_filename_fullpath(const char *filename) {
-  static char fullpath[PATH_MAX];
-  strcpy(fullpath, get_runtime_path());
-  strcat(fullpath, filename);
-  return fullpath;
-}
-
 void delay(ulong howLong) {
   struct timespec sleeper, dummy;
 
@@ -149,11 +123,11 @@ void write_to_file(const char *fn, const char *data, ulong size, ulong pos,
 
   FILE *file;
   if (trunc) {
-    file = fopen(get_filename_fullpath(fn), "wb");
+    file = fopen(fn, "wb");
   } else {
-    file = fopen(get_filename_fullpath(fn), "r+b");
+    file = fopen(fn, "r+b");
     if (!file)
-      file = fopen(get_filename_fullpath(fn), "wb");
+      file = fopen(fn, "wb");
   }
   if (!file)
     return;
@@ -165,7 +139,7 @@ void write_to_file(const char *fn, const char *data, ulong size, ulong pos,
 void read_from_file(const char *fn, char *data, ulong maxsize, ulong pos) {
 
   FILE *file;
-  file = fopen(get_filename_fullpath(fn), "rb");
+  file = fopen(fn, "rb");
   if (!file) {
     data[0] = 0;
     return;
@@ -187,12 +161,12 @@ void read_from_file(const char *fn, char *data, ulong maxsize, ulong pos) {
   return;
 }
 
-void remove_file(const char *fn) { remove(get_filename_fullpath(fn)); }
+void remove_file(const char *fn) { remove(fn); }
 
 bool file_exists(const char *fn) {
 
   FILE *file;
-  file = fopen(get_filename_fullpath(fn), "rb");
+  file = fopen(fn, "rb");
   if (file) {
     fclose(file);
     return true;
@@ -204,7 +178,7 @@ bool file_exists(const char *fn) {
 // file functions
 void file_read_block(const char *fn, void *dst, ulong pos, ulong len) {
 
-  FILE *fp = fopen(get_filename_fullpath(fn), "rb");
+  FILE *fp = fopen(fn, "rb");
   if (fp) {
     fseek(fp, pos, SEEK_SET);
     fread(dst, 1, len, fp);
@@ -214,9 +188,9 @@ void file_read_block(const char *fn, void *dst, ulong pos, ulong len) {
 
 void file_write_block(const char *fn, const void *src, ulong pos, ulong len) {
 
-  FILE *fp = fopen(get_filename_fullpath(fn), "rb+");
+  FILE *fp = fopen(fn, "rb+");
   if (!fp) {
-    fp = fopen(get_filename_fullpath(fn), "wb+");
+    fp = fopen(fn, "wb+");
   }
   if (fp) {
     fseek(fp, pos, SEEK_SET); // this fails silently without the above change
@@ -233,7 +207,7 @@ void file_copy_block(const char *fn, ulong from, ulong to, ulong len,
     return;
   }
 
-  FILE *fp = fopen(get_filename_fullpath(fn), "rb+");
+  FILE *fp = fopen(fn, "rb+");
   if (!fp)
     return;
   fseek(fp, from, SEEK_SET);
@@ -246,7 +220,7 @@ void file_copy_block(const char *fn, ulong from, ulong to, ulong len,
 // compare a block of content
 byte file_cmp_block(const char *fn, const char *buf, ulong pos) {
 
-  FILE *fp = fopen(get_filename_fullpath(fn), "rb");
+  FILE *fp = fopen(fn, "rb");
   if (fp) {
     fseek(fp, pos, SEEK_SET);
     char c = fgetc(fp);

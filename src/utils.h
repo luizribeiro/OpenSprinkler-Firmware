@@ -54,8 +54,6 @@ int16_t water_time_decode_signed(byte i);
 void urlDecode(char *);
 void peel_http_header(char *);
 
-char *get_runtime_path();
-char *get_filename_fullpath(const char *filename);
 void delay(ulong ms);
 void delayMicroseconds(ulong us);
 void delayMicrosecondsHard(ulong us);
