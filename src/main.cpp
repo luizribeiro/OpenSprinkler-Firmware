@@ -907,16 +907,6 @@ void push_message(int type, uint32_t lval, float fval, const char *sval) {
   char *postval = tmp_buffer;
   uint32_t volume;
 
-  bool ifttt_enabled = os.iopts[IOPT_IFTTT_ENABLE] & type;
-
-  // check if this type of event is enabled for push notification
-  if (!ifttt_enabled && !os.mqtt.enabled())
-    return;
-
-  if (ifttt_enabled) {
-    strcpy_P(postval, PSTR("{\"value1\":\""));
-  }
-
   if (os.mqtt.enabled()) {
     topic[0] = 0;
     payload[0] = 0;
@@ -924,8 +914,6 @@ void push_message(int type, uint32_t lval, float fval, const char *sval) {
 
   switch (type) {
   case NOTIFY_STATION_ON:
-
-    // todo: add IFTTT support for this event as well
     if (os.mqtt.enabled()) {
       sprintf_P(topic, PSTR("opensprinkler/station/%d"), lval);
       strcpy_P(payload, PSTR("{\"state\":1}"));
@@ -933,7 +921,6 @@ void push_message(int type, uint32_t lval, float fval, const char *sval) {
     break;
 
   case NOTIFY_STATION_OFF:
-
     if (os.mqtt.enabled()) {
       sprintf_P(topic, PSTR("opensprinkler/station/%d"), lval);
       if (os.iopts[IOPT_SENSOR1_TYPE] == SENSOR_TYPE_FLOW) {
@@ -944,75 +931,29 @@ void push_message(int type, uint32_t lval, float fval, const char *sval) {
         sprintf_P(payload, PSTR("{\"state\":0,\"duration\":%d}"), (int)fval);
       }
     }
-    if (ifttt_enabled) {
-      char name[STATION_NAME_SIZE];
-      os.get_station_name(lval, name);
-      sprintf_P(postval + strlen(postval),
-                PSTR("Station %s closed. It ran for %d minutes %d seconds."),
-                name, (int)fval / 60, (int)fval % 60);
-
-      if (os.iopts[IOPT_SENSOR1_TYPE] == SENSOR_TYPE_FLOW) {
-        sprintf_P(postval + strlen(postval), PSTR(" Flow rate: %d.%02d"),
-                  (int)flow_last_gpm, (int)(flow_last_gpm * 100) % 100);
-      }
-    }
     break;
 
   case NOTIFY_PROGRAM_SCHED:
-
-    if (ifttt_enabled) {
-      if (sval)
-        strcat_P(postval, PSTR("Manually scheduled "));
-      else
-        strcat_P(postval, PSTR("Automatically scheduled "));
-      strcat_P(postval, PSTR("Program "));
-      {
-        ProgramStruct prog;
-        pd.read(lval, &prog);
-        if (lval < pd.nprograms)
-          strcat(postval, prog.name);
-      }
-      sprintf_P(postval + strlen(postval), PSTR(" with %d%% water level."),
-                (int)fval);
-    }
     break;
 
   case NOTIFY_SENSOR1:
-
     if (os.mqtt.enabled()) {
       strcpy_P(topic, PSTR("opensprinkler/sensor1"));
       sprintf_P(payload, PSTR("{\"state\":%d}"), (int)fval);
     }
-    if (ifttt_enabled) {
-      strcat_P(postval, PSTR("Sensor 1 "));
-      strcat_P(postval,
-               ((int)fval) ? PSTR("activated.") : PSTR("de-activated."));
-    }
     break;
 
   case NOTIFY_SENSOR2:
-
     if (os.mqtt.enabled()) {
       strcpy_P(topic, PSTR("opensprinkler/sensor2"));
       sprintf_P(payload, PSTR("{\"state\":%d}"), (int)fval);
     }
-    if (ifttt_enabled) {
-      strcat_P(postval, PSTR("Sensor 2 "));
-      strcat_P(postval,
-               ((int)fval) ? PSTR("activated.") : PSTR("de-activated."));
-    }
     break;
 
   case NOTIFY_RAINDELAY:
-
     if (os.mqtt.enabled()) {
       strcpy_P(topic, PSTR("opensprinkler/raindelay"));
       sprintf_P(payload, PSTR("{\"state\":%d}"), (int)fval);
-    }
-    if (ifttt_enabled) {
-      strcat_P(postval, PSTR("Rain delay "));
-      strcat_P(postval,
-               ((int)fval) ? PSTR("activated.") : PSTR("de-activated."));
     }
     break;
 
@@ -1026,59 +967,21 @@ void push_message(int type, uint32_t lval, float fval, const char *sval) {
       sprintf_P(payload, PSTR("{\"count\":%lu,\"volume\":%d.%02d}"), lval,
                 (int)volume / 100, (int)volume % 100);
     }
-    if (ifttt_enabled) {
-      sprintf_P(postval + strlen(postval),
-                PSTR("Flow count: %lu, volume: %d.%02d"), lval,
-                (int)volume / 100, (int)volume % 100);
-    }
     break;
 
   case NOTIFY_WEATHER_UPDATE:
-
-    if (ifttt_enabled) {
-      if (lval > 0) {
-        strcat_P(postval, PSTR("External IP updated: "));
-        byte ip[4] = {(byte)((lval >> 24) & 0xFF), (byte)((lval >> 16) & 0xFF),
-                      (byte)((lval >> 8) & 0xFF), (byte)(lval & 0xFF)};
-        ip2string(postval, ip);
-      }
-      if (fval >= 0) {
-        sprintf_P(postval + strlen(postval), PSTR("Water level updated: %d%%."),
-                  (int)fval);
-      }
-    }
     break;
 
   case NOTIFY_REBOOT:
-
     if (os.mqtt.enabled()) {
       strcpy_P(topic, PSTR("opensprinkler/system"));
       strcpy_P(payload, PSTR("{\"state\":\"started\"}"));
-    }
-    if (ifttt_enabled) {
-      strcat_P(postval, PSTR("Process restarted."));
     }
     break;
   }
 
   if (os.mqtt.enabled() && strlen(topic) && strlen(payload))
     os.mqtt.publish(topic, payload);
-
-  if (ifttt_enabled) {
-    strcat_P(postval, PSTR("\"}"));
-
-    // char postBuffer[1500];
-    BufferFiller bf = ether_buffer;
-    bf.emit_p(PSTR("POST /trigger/sprinkler/with/key/$O HTTP/1.0\r\n"
-                   "Host: $S\r\n"
-                   "Accept: */*\r\n"
-                   "Content-Length: $D\r\n"
-                   "Content-Type: application/json\r\n\r\n$S"),
-              SOPT_IFTTT_KEY, DEFAULT_IFTTT_URL, strlen(postval), postval);
-
-    os.send_http_request(DEFAULT_IFTTT_URL, 80, ether_buffer,
-                         remote_http_callback);
-  }
 }
 
 // ================================

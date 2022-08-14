@@ -145,7 +145,6 @@ typedef unsigned long ulong;
 #define DEFAULT_LOCATION "42.36,-71.06"                     // Boston,MA
 #define DEFAULT_JAVASCRIPT_URL "https://ui.opensprinkler.com/js"
 #define DEFAULT_WEATHER_URL "weather.opensprinkler.com"
-#define DEFAULT_IFTTT_URL "maker.ifttt.com"
 #define DEFAULT_EMPTY_STRING ""
 
 /** Macro define of each option
@@ -196,7 +195,6 @@ enum {
   IOPT_DNS_IP3,
   IOPT_DNS_IP4,
   IOPT_SPE_AUTO_REFRESH,
-  IOPT_IFTTT_ENABLE,
   IOPT_SENSOR1_TYPE,
   IOPT_SENSOR1_OPTION,
   IOPT_SENSOR2_TYPE,
@@ -220,7 +218,6 @@ enum {
   SOPT_JAVASCRIPTURL,
   SOPT_WEATHERURL,
   SOPT_WEATHER_OPTS,
-  SOPT_IFTTT_KEY, // todo: make this IFTTT config just like MQTT
   SOPT_STA_SSID,
   SOPT_STA_PASS,
   SOPT_MQTT_OPTS,

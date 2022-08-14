@@ -121,7 +121,6 @@ const char iopt_json_names[] PROGMEM = "fwv\0\0"
                                        "dns3\0"
                                        "dns4\0"
                                        "sar\0\0"
-                                       "ife\0\0"
                                        "sn1t\0"
                                        "sn1o\0"
                                        "sn2t\0"
@@ -244,7 +243,6 @@ byte OpenSprinkler::iopts[] = {
     8, // this and the next three bytes define the custom dns server ip
     8, 8, 8,
     0,   // special station auto refresh
-    0,   // ifttt enable bits
     0,   // sensor 1 type (see SENSOR_TYPE macro defines)
     1,   // sensor 1 option. 0: normally closed; 1: normally open.
          // default 1.
