@@ -102,7 +102,7 @@ static void getweather_callback(char *buffer) {
     v = atoi(tmp_buffer);
     if (v >= 0 && v <= 108) {
       if (v != os.iopts[IOPT_TIMEZONE]) {
-        // if timezone changed, save change and force ntp sync
+        // if timezone changed, save change
         os.iopts[IOPT_TIMEZONE] = v;
         os.iopts_save();
         os.weather_update_flag |= WEATHER_UPDATE_TZ;

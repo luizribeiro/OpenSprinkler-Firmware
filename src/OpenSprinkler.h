@@ -104,7 +104,6 @@ struct ConStatus {
   byte
       has_curr_sense : 1; // HIGH means the controller has a current sensing pin
   byte safe_reboot : 1;   // HIGH means a safe reboot has been marked
-  byte req_ntpsync : 1;   // request ntpsync
   byte req_network : 1;   // request check network
   byte display_board : 5; // the board that is being displayed onto the lcd
   byte network_fails : 3; // number of network fails

@@ -56,7 +56,6 @@ void turn_off_station(byte sid, ulong curr_time);
 void process_dynamic_events(ulong curr_time);
 void check_network(time_t curr_time);
 void check_weather(time_t curr_time);
-void perform_ntp_sync(time_t curr_time);
 void log_statistics(time_t curr_time);
 void delete_log(char *name);
 void reset_all_stations_immediate();
@@ -647,7 +646,7 @@ void server_change_program() {
 void server_json_options_main() {
   byte oid;
   for (oid = 0; oid < NUM_IOPTS; oid++) {
-    if (oid == IOPT_USE_NTP || oid == IOPT_USE_DHCP ||
+    if (oid == IOPT_USE_DHCP ||
         (oid >= IOPT_STATIC_IP1 && oid <= IOPT_STATIC_IP4) ||
         (oid >= IOPT_GATEWAY_IP1 && oid <= IOPT_GATEWAY_IP4) ||
         (oid >= IOPT_DNS_IP1 && oid <= IOPT_DNS_IP4) ||
@@ -954,13 +953,12 @@ void server_change_scripturl() {
  * pw:	password
  * o?:	option name (? is option index)
  * loc: location
- * ttt: manual time (applicable only if ntp=0)
+ * ttt: manual time
  */
 void server_change_options() {
   char *p = get_buffer;
 
   // temporarily save some old options values
-  bool time_change = false;
   bool weather_change = false;
   bool sensor_change = false;
 
@@ -1004,10 +1002,6 @@ void server_change_options() {
     }
 
     if (os.iopts[oid] != prev_value) { // if value has changed
-      if (oid == IOPT_TIMEZONE || oid == IOPT_USE_NTP)
-        time_change = true;
-      if (oid >= IOPT_NTP_IP1 && oid <= IOPT_NTP_IP4)
-        time_change = true;
       if (oid == IOPT_USE_WEATHER)
         weather_change = true;
       if (oid >= IOPT_SENSOR1_TYPE && oid <= IOPT_SENSOR2_OFF_DELAY)
@@ -1072,22 +1066,10 @@ void server_change_options() {
   }
   */
 
-  // if not using NTP and manually setting time
-  if (!os.iopts[IOPT_USE_NTP] &&
-      findKeyVal(p, tmp_buffer, TMP_BUFFER_SIZE, PSTR("ttt"), true)) {
-    unsigned long t;
-    t = strtoul(tmp_buffer, NULL, 0);
-    // before chaging time, reset all stations to avoid messing up with timing
-    reset_all_stations_immediate();
-  }
   if (err)
     handle_return(HTML_DATA_OUTOFBOUND);
 
   os.iopts_save();
-
-  if (time_change) {
-    os.status.req_ntpsync = 1;
-  }
 
   if (weather_change) {
     os.iopts[IOPT_WATER_PERCENTAGE] = 100; // reset watering percentage to 100%

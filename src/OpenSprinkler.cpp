@@ -79,7 +79,6 @@ byte OpenSprinkler::pin_sr_data = PIN_SR_DATA;
 // for Integer options
 const char iopt_json_names[] PROGMEM = "fwv\0\0"
                                        "tz\0\0\0"
-                                       "ntp\0\0"
                                        "dhcp\0"
                                        "ip1\0\0"
                                        "ip2\0\0"
@@ -109,10 +108,6 @@ const char iopt_json_names[] PROGMEM = "fwv\0\0"
                                        "dim\0\0"
                                        "bst\0\0"
                                        "uwt\0\0"
-                                       "ntp1\0"
-                                       "ntp2\0"
-                                       "ntp3\0"
-                                       "ntp4\0"
                                        "lg\0\0\0"
                                        "mas2\0"
                                        "mton2"
@@ -214,7 +209,6 @@ const byte iopt_max[] PROGMEM = {0,
 byte OpenSprinkler::iopts[] = {
     OS_FW_VERSION, // firmware version
     28,            // default time zone: GMT-5
-    1,             // 0: disable NTP sync, 1: enable NTP sync
     1,             // 0: use static ip, 1: use dhcp
     0,             // this and next 3 bytes define static ip
     0, 0, 0,
@@ -222,25 +216,23 @@ byte OpenSprinkler::iopts[] = {
     0, 0, 0,
     144, // this and next byte define http port number
     31, OS_HW_VERSION,
-    0,   // number of 8-station extension board. 0: no extension boards
-    1,   // the option 'sequential' is now retired
-    120, // station delay time (-10 minutes to 10 minutes).
-    0,   // index of master station. 0: no master station
-    120, // master on time adjusted time (-10 minutes to 10 minutes)
-    120, // master off adjusted time (-10 minutes to 10 minutes)
-    0,   // urs (retired)
-    0,   // rso (retired)
-    100, // water level (default 100%),
-    1,   // device enable
-    0,   // 1: ignore password; 0: use password
-    0,   // device id
-    150, // lcd contrast
-    100, // lcd backlight
-    50,  // lcd dimming
-    80,  // boost time (only valid to DC and LATCH type)
-    0,   // weather algorithm (0 means not using weather algorithm)
-    0,   // this and the next three bytes define the ntp server ip
-    0, 0, 0,
+    0,           // number of 8-station extension board. 0: no extension boards
+    1,           // the option 'sequential' is now retired
+    120,         // station delay time (-10 minutes to 10 minutes).
+    0,           // index of master station. 0: no master station
+    120,         // master on time adjusted time (-10 minutes to 10 minutes)
+    120,         // master off adjusted time (-10 minutes to 10 minutes)
+    0,           // urs (retired)
+    0,           // rso (retired)
+    100,         // water level (default 100%),
+    1,           // device enable
+    0,           // 1: ignore password; 0: use password
+    0,           // device id
+    150,         // lcd contrast
+    100,         // lcd backlight
+    50,          // lcd dimming
+    80,          // boost time (only valid to DC and LATCH type)
+    0,           // weather algorithm (0 means not using weather algorithm)
     1,           // enable logging: 0: disable; 1: enable.
     0,           // index of master2. 0: no master2 station
     120,         // master2 on adjusted time
@@ -1069,17 +1061,6 @@ void OpenSprinkler::iopts_load() {
   status.enabled = iopts[IOPT_DEVICE_ENABLE];
   iopts[IOPT_FW_VERSION] = OS_FW_VERSION;
   iopts[IOPT_FW_MINOR] = OS_FW_MINOR;
-  /* Reject the former default 50.97.210.169 NTP IP address as
-   * it no longer works, yet is carried on by people's saved
-   * configs when they upgrade from older versions.
-   * IOPT_NTP_IP1 = 0 leads to the new good default behavior. */
-  if (iopts[IOPT_NTP_IP1] == 50 && iopts[IOPT_NTP_IP2] == 97 &&
-      iopts[IOPT_NTP_IP3] == 210 && iopts[IOPT_NTP_IP4] == 169) {
-    iopts[IOPT_NTP_IP1] = 0;
-    iopts[IOPT_NTP_IP2] = 0;
-    iopts[IOPT_NTP_IP3] = 0;
-    iopts[IOPT_NTP_IP4] = 0;
-  }
 }
 
 /** Save integer options to file */

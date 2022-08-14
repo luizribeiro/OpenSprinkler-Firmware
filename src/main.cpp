@@ -41,7 +41,6 @@ void remote_http_callback(char *);
 
 // Small variations have been added to the timing values below
 // to minimize conflicting events
-#define NTP_SYNC_INTERVAL 86413L     // NTP sync interval (in seconds)
 #define CHECK_NETWORK_INTERVAL 601   // Network checking timeout (in seconds)
 #define CHECK_WEATHER_TIMEOUT 21613L // Weather check interval (in seconds)
 #define CHECK_WEATHER_SUCCESS_TIMEOUT                                          \
@@ -134,7 +133,6 @@ void process_dynamic_events(ulong curr_time);
 void check_network();
 void check_weather();
 bool process_special_program_command(const char *, uint32_t curr_time);
-void perform_ntp_sync();
 void delete_log(char *name);
 
 void handle_web_request(char *p);
@@ -556,11 +554,6 @@ void do_loop() {
         flowcount_rt_start = flow_count;
       }
     }
-
-    // perform ntp sync
-    if (curr_time % NTP_SYNC_INTERVAL == 0)
-      os.status.req_ntpsync = 1;
-    perform_ntp_sync();
 
     // check network connection
     if (curr_time && (curr_time % CHECK_NETWORK_INTERVAL == 0))
@@ -1231,12 +1224,6 @@ void delete_log(char *name) {
  */
 void check_network() {
   // nothing to do for other platforms
-}
-
-/** Perform NTP sync */
-void perform_ntp_sync() {
-  // nothing to do here
-  // Linux will do this for you
 }
 
 int main(int argc, char *argv[]) {
