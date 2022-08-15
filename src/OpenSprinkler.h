@@ -176,10 +176,6 @@ public:
                        // other functions
   static byte start_network(); // initialize network with the given mac and port
   static byte start_ether(); // initialize ethernet with the given mac and port
-  static bool network_connected(); // check if the network is up
-  static bool
-  load_hardware_mac(byte *buffer,
-                    bool wired = false); // read hardware mac address
   static time_t now_tz();
   // -- station names and attributes
   static void get_station_data(byte sid, StationData *data); // get station data

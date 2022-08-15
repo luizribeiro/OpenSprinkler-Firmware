@@ -178,7 +178,7 @@ void do_loop() {
   }
 
   // Start up MQTT when we have a network connection
-  if (os.status.req_mqtt_restart && os.network_connected()) {
+  if (os.status.req_mqtt_restart) {
     DEBUG_PRINTLN(F("req_mqtt_restart"));
     os.mqtt.begin();
     os.status.req_mqtt_restart = false;

@@ -204,16 +204,14 @@ void OSMqtt::loop(void) {
 
 #if defined(ENABLE_DEBUG)
   // Print a diagnostic message whenever the MQTT state changes
-  bool network = os.network_connected(), mqtt = _connected();
-  static bool last_network = 0, last_mqtt = 0;
+  bool mqtt = _connected();
+  static bool last_mqtt = 0;
   static int last_state = 999;
 
-  if (last_state != state || last_network != network || last_mqtt != mqtt) {
-    DEBUG_LOGF("MQTT Loop: Network %s, MQTT %s, State - %s\r\n",
-               network ? "UP" : "DOWN", mqtt ? "UP" : "DOWN",
+  if (last_state != state || last_mqtt != mqtt) {
+    DEBUG_LOGF("MQTT Loop: MQTT %s, State - %s\r\n", mqtt ? "UP" : "DOWN",
                _state_string(state));
     last_state = state;
-    last_network = network;
     last_mqtt = mqtt;
   }
 #endif
